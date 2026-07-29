@@ -1,26 +1,50 @@
-# 🛡️ DC Point — Escrow-Based E-Marketplace & Legalized Trade Platform
+<div align="center">
 
-**DC Point** is an escrow-based e-marketplace platform designed to solve the "lack of trust" problem faced by small-scale, unregistered sellers, artisans, and rental hosts. It combines **milestone-based escrow payments**, **collaborative legal trade agreements**, **automated AI compliance screening**, and a **mutual reputation system**.
+# 🛡️ DC Point
+
+### Escrow-Based E-Marketplace & Legalized Trade Platform
+
+Modern, AI-powered peer-to-peer e-marketplace with milestone escrow vaults and digital legal contract generation.
+
+<br/>
+
+[![Live Demo](https://img.shields.io/badge/%F0%9F%8C%90_LIVE_DEMO-VISIT_WEBSITE-00ADB5?style=for-the-badge&logo=googlechrome&logoColor=white)](https://fincodelabs.github.io/DC-Point/)
+[![React](https://img.shields.io/badge/REACT-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![JavaScript](https://img.shields.io/badge/JAVASCRIPT-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Vite](https://img.shields.io/badge/VITE-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+<br/>
+[![Escrow Vault](https://img.shields.io/badge/ESCROW_VAULT-PROTECTED-10B981?style=for-the-badge)](https://github.com/FinCodeLabs/DC-Point)
+[![AI Compliance](https://img.shields.io/badge/AI_COMPLIANCE-VERIFIED-0B192C?style=for-the-badge)](https://github.com/FinCodeLabs/DC-Point)
+
+<br/>
 
 ---
 
-## 🌟 Key Features
+</div>
 
-- **🛡️ Escrow Vault Protection**: Funds are locked by DC Point upon order placement and released to the seller only after the buyer inspects and approves final delivery.
-- **📄 Dual Digital Signature Agreements**: Legal contract generator locking delivery windows, quality inspection rules, and custom packaging notes with unique cryptographic contract hashes.
-- **⚡ AI Pre-Screening & Compliance**: Automated scanning checks title, description, and terms for restricted goods, IP/trademark safety, and legal compliance before going live.
+## 📌 Overview
+
+**DC Point** solves the critical "trust gap" for small-scale artisans, unregistered micro-sellers, and peer-to-peer rental hosts. By combining **milestone-based escrow vault locks**, **dual-signature legal trade agreements**, **automated AI safety screening**, and a **transparent mutual reputation score**, DC Point empowers buyers and sellers to trade high-value products and rental equipment safely without fear of default or scams.
+
+---
+
+## ✨ Key Features
+
+- **🛡️ Escrow Vault Protection**: Buyer funds are securely locked in an escrow vault upon trade initiation and only released after full inspection and approval.
+- **📄 Dual Digital Signature Contracts**: Automatically generates legally binding trade agreements with custom packaging notes, quality criteria, and cryptographic hash verification.
+- **⚡ AI Compliance Screening**: Real-time screening of all listings against legal standards, restricted goods databases, and IP copyright compliance.
 - **🛒 Dual Marketplaces**:
-  - **Purchase Market**: Custom goods, artisan crafts, tech prototypes, and professional services.
-  - **Rent Market**: Gear & equipment rental with refundable escrow security deposit holds.
-- **🔄 6-Step Guided Trade Wizard Engine**:
-  1. *Chat & Terms Discussion*
-  2. *Legal Agreement Builder & Digital Signing*
+  - **Purchase Market**: Artisanal crafts, handmade leather goods, tech prototypes, and custom items.
+  - **Rent Market**: Professional equipment & gear rentals with refundable escrow deposit holds.
+- **🔄 6-Step Guided Trade Engine**:
+  1. *Chat & Term Negotiation*
+  2. *Legal Agreement Builder & Signing*
   3. *Escrow Payment Vault Initiation*
-  4. *Seller Progress Updates & Live Countdown Timer*
+  4. *Seller Progress Updates & Countdown Timer*
   5. *Pre-Delivery Checkpoint Approval*
   6. *Delivery Verification & Escrow Release*
-- **⚖️ Resolution Center**: AI-assisted mediation evaluating contract terms side-by-side with grievance evidence.
-- **🍔 Interactive Persona Switcher**: Switch effortlessly between user personas (*Alex Mercer - Buyer* vs *Maya Lin - Artisan Seller*) to test buyer & seller workflows.
+- **⚖️ Resolution Center**: AI-assisted dispute resolution analyzing contract terms side-by-side with photo/video evidence.
+- **🍔 Interactive Persona Switcher**: Switch instantly between *Alex Mercer (Buyer)* and *Maya Lin (Artisan Seller)* to test end-to-end buyer and seller user journeys.
 
 ---
 
@@ -28,43 +52,43 @@
 
 ```
 Pint-Point/
-├── DC_Point_Source_Code/      # Full React + Vite Source Code
-│   ├── src/                   # Components, Data & Assets
+├── DC_Point_Source_Code/      # React 19 + Vite Frontend Application
+│   ├── src/                   # React Components, Pages, Data & Assets
 │   ├── public/                # Static Media Assets
-│   ├── package.json           # Dependencies & Scripts
+│   ├── package.json           # Dependencies & NPM Scripts
 │   └── vite.config.js         # Vite Configuration
-├── DC_Point_Production_Build/ # Pre-built Production Assets (Static HTML/CSS/JS)
-└── DC_Point_Complete_Source/  # Complete Source Backup
+├── DC_Point_Production_Build/ # Compiled Production Assets (Static HTML/CSS/JS)
+└── .github/workflows/         # GitHub Actions CI/CD Deployment Workflow
 ```
 
 ---
 
-## 🚀 Getting Started Locally
+## 🚀 Quick Start & Local Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- npm
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
 
-### Installation & Running
+### Installation
 
-1. **Clone the repository**:
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/FinCodeLabs/DC-Point.git
    cd DC-Point/DC_Point_Source_Code
    ```
 
-2. **Install dependencies**:
+2. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-3. **Start the local development server**:
+3. **Run Local Development Server**:
    ```bash
    npm run dev
    ```
    Open `http://localhost:5173/` in your browser.
 
-4. **Build for production**:
+4. **Build Production Bundle**:
    ```bash
    npm run build
    ```
@@ -73,10 +97,13 @@ Pint-Point/
 
 ## 🛠️ Tech Stack
 
-- **Frontend Framework**: React 18, Vite
-- **Icons**: Lucide React
-- **Animations & Effects**: Canvas Confetti, Custom Keyframe CSS Transitions
-- **Styling**: Vanilla CSS Modules with custom Fintech RegTech tokens
+| Technology | Purpose |
+| :--- | :--- |
+| **React 19** | Modern Component Architecture & Hooks |
+| **Vite 8** | High-performance Frontend Build Tooling |
+| **Lucide React** | Clean, Modern Iconography |
+| **Canvas Confetti** | Visual Reward Celebrations on Escrow Release |
+| **Vanilla CSS Tokens** | Custom RegTech & Fintech Color Palette (`#0B192C`, `#00ADB5`, `#10B981`) |
 
 ---
 
