@@ -178,7 +178,7 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
               <div className="grid-2">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>
-                    {formData.type === 'rent' ? 'Daily Rental Rate ($) *' : 'Escrow Sales Price ($) *'}
+                    {formData.type === 'rent' ? 'Daily Rental Rate (₹) *' : 'Escrow Sales Price (₹) *'}
                   </label>
                   <input 
                     type="number"
@@ -193,7 +193,7 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>
-                    {formData.type === 'rent' ? 'Security Deposit ($)' : 'Pricing Unit'}
+                    {formData.type === 'rent' ? 'Security Deposit (₹)' : 'Pricing Unit'}
                   </label>
                   {formData.type === 'rent' ? (
                     <input 

@@ -139,7 +139,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
       status: 'Escrow Locked — In Production & Progress Tracking',
       timer: { expiresInSeconds: 86400, warningText: 'Buyer must respond to progress update within 24h' }
     });
-    if (showToast) showToast(`🎉 $${(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)} locked securely in DC Point Escrow Vault!`);
+    if (showToast) showToast(`🎉 ₹${(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)} locked securely in DC Point Escrow Vault!`);
   };
 
   const handleApproveProgress = () => {
@@ -405,13 +405,13 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
 
               <div style={{ maxWidth: '420px', margin: '0 auto 1.5rem auto', background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'left' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  <span>Listing Amount:</span> <strong>${trade.price.toFixed(2)}</strong>
+                  <span>Listing Amount:</span> <strong>₹{trade.price.toFixed(2)}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  <span>Escrow Fee (5%):</span> <strong>${(trade.escrowFee || trade.price * 0.05).toFixed(2)}</strong>
+                  <span>Escrow Fee (5%):</span> <strong>₹{(trade.escrowFee || trade.price * 0.05).toFixed(2)}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.75rem', borderTop: '1px solid #CBD5E1', fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>
-                  <span>Total Escrow Deposit:</span> <span style={{ color: '#10B981' }}>${(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)}</span>
+                  <span>Total Escrow Deposit:</span> <span style={{ color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)}</span>
                 </div>
               </div>
 
@@ -566,7 +566,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                   <div>
                     <h5 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>Release Escrow Payment</h5>
                     <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '0.4rem 0 1rem 0' }}>
-                      Triggers instant transfer of <strong>${(trade.price || 185).toFixed(2)}</strong> to {trade.sellerName}'s wallet.
+                      Triggers instant transfer of <strong>₹{(trade.price || 185).toFixed(2)}</strong> to {trade.sellerName}'s wallet.
                     </p>
                   </div>
 

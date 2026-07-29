@@ -64,7 +64,7 @@ export default function Dashboard({
               <span className="badge badge-verified"><ShieldCheck size={12} /> {currentUser.verifiedStatus}</span>
             </div>
             <div style={{ fontSize: '0.9rem', color: '#94A3B8' }}>
-              Trust Score: <strong style={{ color: '#00ADB5' }}>{currentUser.trustScore}%</strong> • Escrow Balance: <strong style={{ color: '#10B981' }}>${currentUser.walletBalance.toLocaleString()}</strong>
+              Trust Score: <strong style={{ color: '#00ADB5' }}>{currentUser.trustScore}%</strong> • Escrow Balance: <strong style={{ color: '#10B981' }}>₹{currentUser.walletBalance.toLocaleString()}</strong>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function Dashboard({
                     <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '0.4rem', display: 'flex', gap: '1.5rem' }}>
                       <span>Buyer: <strong>{trade.buyerName}</strong></span>
                       <span>Seller: <strong>{trade.sellerName}</strong></span>
-                      <span>Escrow Locked: <strong style={{ color: '#10B981' }}>${trade.totalEscrowAmount || trade.price}</strong></span>
+                      <span>Escrow Locked: <strong style={{ color: '#10B981' }}>₹{trade.totalEscrowAmount || trade.price}</strong></span>
                     </div>
                   </div>
 
@@ -172,7 +172,7 @@ export default function Dashboard({
                   </div>
                   <span className="badge badge-verified" style={{ marginBottom: '0.4rem' }}>{item.complianceStatus}</span>
                   <h4 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '0.25rem' }}>{item.title}</h4>
-                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0B192C' }}>${item.price}</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0B192C' }}>₹{item.price}</div>
                 </div>
               ))}
             </div>
@@ -212,7 +212,7 @@ export default function Dashboard({
                       <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '0.4rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
                         <span>Seller: <strong>{trade.sellerName}</strong></span>
                         <span>Type: <strong style={{ textTransform: 'capitalize' }}>{trade.type}</strong></span>
-                        <span>Escrow Locked: <strong style={{ color: '#10B981' }}>${trade.totalEscrowAmount || trade.price}</strong></span>
+                        <span>Escrow Locked: <strong style={{ color: '#10B981' }}>₹{trade.totalEscrowAmount || trade.price}</strong></span>
                       </div>
                     </div>
                   </div>

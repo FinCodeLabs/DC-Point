@@ -85,7 +85,7 @@ export default function ListingDetailModal({ listing, onClose, onStartTrade, onV
               </h2>
 
               <div style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0B192C', marginBottom: '1.25rem' }}>
-                ${listing.price} <span style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: '500' }}>({listing.unit})</span>
+                ₹{listing.price} <span style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: '500' }}>({listing.unit})</span>
               </div>
 
               <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>

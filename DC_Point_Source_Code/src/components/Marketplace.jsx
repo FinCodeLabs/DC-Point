@@ -291,7 +291,7 @@ export default function Marketplace({
                       {item.type === 'rent' ? 'Rental Rate' : 'Escrow Price'}
                     </div>
                     <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0B192C' }}>
-                      ${item.price} <span style={{ fontSize: '0.8rem', fontWeight: '500', color: '#64748B' }}>/{item.unit.split(' ')[0]}</span>
+                      ₹{item.price} <span style={{ fontSize: '0.8rem', fontWeight: '500', color: '#64748B' }}>/{item.unit.split(' ')[0]}</span>
                     </div>
                   </div>
 

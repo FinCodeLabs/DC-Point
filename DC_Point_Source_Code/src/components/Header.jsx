@@ -51,7 +51,7 @@ export default function Header({
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', color: '#94A3B8' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: '#00ADB5' }}>
-              <Wallet size={14} /> Escrow Vault Balance: <strong>${currentUser.walletBalance.toLocaleString()}</strong>
+              <Wallet size={14} /> Escrow Vault Balance: <strong>₹{currentUser.walletBalance.toLocaleString()}</strong>
             </span>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function Header({
                     onClick={handleUpgrade}
                     style={{ width: '100%', padding: '0.5rem', fontSize: '0.8rem' }}
                   >
-                    <span>Upgrade to Pro ($29/mo)</span>
+                    <span>Upgrade to Pro (₹2,499/mo)</span>
                     <ArrowRight size={14} />
                   </button>
                 </div>
