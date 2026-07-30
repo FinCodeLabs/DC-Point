@@ -61,7 +61,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 38,
     complianceStatus: 'Verified',
     complianceBadgeText: 'AI Compliance Passed • Legal Contract Ready',
-    image: '/leather_bag.jpg',
+    image: './leather_bag.jpg',
     description: 'Custom handmade leather bag built using vegetable-tanned full-grain leather. Custom initials stamping included.',
     specifications: [
       { label: 'Material', value: '100% Full-grain Italian Leather' },
@@ -92,7 +92,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 38,
     complianceStatus: 'Verified',
     complianceBadgeText: 'AI Compliance Passed • Safety Tested',
-    image: '/neon_sign.jpg',
+    image: './neon_sign.jpg',
     description: 'Custom acrylic LED neon sign for storefronts, event backdrops, or personal studio space. Includes dimmer remote.',
     specifications: [
       { label: 'Tube Spec', value: 'Silicone LED Flexible Tube 12V' },
@@ -123,7 +123,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 22,
     complianceStatus: 'Verified',
     complianceBadgeText: 'IP Safety Standard Verified',
-    image: '/pcb_board.jpg',
+    image: './pcb_board.jpg',
     description: 'Multi-layer FR4 PCB fabrication with pick-and-place component assembly for tech startups and prototype testing.',
     specifications: [
       { label: 'Layers', value: '2 - 6 Layers available' },
@@ -152,7 +152,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 54,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Food Safety Compliance Checked',
-    image: '/honey_jar.jpg',
+    image: './honey_jar.jpg',
     description: 'Unfiltered, unpasteurized cold-extracted raw honey harvested from sustainable forest hives. Glass jars sealed with security strip.',
     specifications: [
       { label: 'Purity', value: '100% Unpasteurized Honey' },
@@ -185,7 +185,7 @@ export const INITIAL_RENT_LISTINGS = [
     sellerCompletedTrades: 62,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Equipment Insurance Verified',
-    image: '/cinema_camera.jpg',
+    image: './cinema_camera.jpg',
     description: 'Complete 4K cinema camera package including Sony FX3 body, 24-70mm f/2.8 GM II lens, wireless mic set, V-mount batteries & Pelican case.',
     specifications: [
       { label: 'Resolution', value: '4K 120fps 10-bit 4:2:2' },
@@ -215,7 +215,7 @@ export const INITIAL_RENT_LISTINGS = [
     sellerCompletedTrades: 41,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Sound Tech Inspected',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop&q=80',
+    image: './cinema_camera.jpg',
     description: 'Flagship club standard DJ setup in heavy flight cases. Ready for festivals, corporate events, and wedding performances.',
     specifications: [
       { label: 'Condition', value: 'Pristine Studio Condition' },
@@ -279,7 +279,7 @@ export const MOCK_ACTIVE_TRADES = [
         sender: 'Maya Lin (Seller)',
         timestamp: '2026-07-29 10:15 AM',
         text: 'Leather cutting and initial stitching completed! Hand-embossed "A.M." initials on inner pocket flap as requested.',
-        image: '/leather_bag.jpg'
+        image: './leather_bag.jpg'
       }
     ],
     timer: {

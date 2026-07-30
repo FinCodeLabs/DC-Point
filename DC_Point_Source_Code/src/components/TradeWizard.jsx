@@ -109,7 +109,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
       sender: `${currentUser.name} (${currentUser.id === trade.sellerId ? 'Seller' : 'Buyer'})`,
       timestamp: 'Just now',
       text: newUpdateText,
-      image: trade.image || (trade.type === 'rent' ? '/cinema_camera.jpg' : '/pcb_board.jpg')
+      image: trade.image ? (trade.image.startsWith('/') ? '.' + trade.image : trade.image) : (trade.type === 'rent' ? './cinema_camera.jpg' : './pcb_board.jpg')
     };
 
     const updatedUpdates = [...(trade.progressUpdates || []), newUpdate];
@@ -564,7 +564,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                         <p style={{ fontSize: '0.875rem', marginTop: '0.35rem', color: '#334155' }}>{up.text}</p>
                         {up.image && (
                           <div style={{ marginTop: '0.75rem', borderRadius: '6px', overflow: 'hidden', height: '140px' }}>
-                            <img src={up.image} alt="Progress proof" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={up.image?.startsWith('/') ? '.' + up.image : up.image} alt="Progress proof" onError={(e) => { e.target.onerror = null; e.target.src = './leather_bag.jpg'; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         )}
                       </div>

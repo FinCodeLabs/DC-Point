@@ -73,7 +73,7 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
       sellerCompletedTrades: currentUser.completedTrades || 1,
       complianceStatus: 'Verified',
       complianceBadgeText: 'AI Compliance Passed • Legal Contract Ready',
-      image: formData.type === 'rent' ? '/cinema_camera.jpg' : '/leather_bag.jpg',
+      image: formData.type === 'rent' ? './cinema_camera.jpg' : './leather_bag.jpg',
       description: formData.description,
       specifications: [
         { label: 'Category', value: formData.category },

@@ -192,8 +192,12 @@ export default function Marketplace({
               {/* Image Preview */}
               <div style={{ position: 'relative', height: '200px', background: '#F1F5F9', overflow: 'hidden' }}>
                 <img 
-                  src={item.image} 
+                  src={item.image?.startsWith('/') ? '.' + item.image : item.image} 
                   alt={item.title}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = item.type === 'rent' ? './cinema_camera.jpg' : './leather_bag.jpg';
+                  }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 

@@ -514,7 +514,7 @@ export default function Dashboard({
               {myListings.map(item => (
                 <div key={item.id} className="card" style={{ padding: '1.25rem' }}>
                   <div style={{ height: '160px', borderRadius: '8px', overflow: 'hidden', marginBottom: '0.75rem', background: '#F1F5F9' }}>
-                    <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={item.image?.startsWith('/') ? '.' + item.image : item.image} alt={item.title} onError={(e) => { e.target.onerror = null; e.target.src = item.type === 'rent' ? './cinema_camera.jpg' : './leather_bag.jpg'; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <span className="badge badge-verified" style={{ marginBottom: '0.4rem' }}>{item.complianceStatus}</span>
                   <h4 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '0.25rem' }}>{item.title}</h4>
