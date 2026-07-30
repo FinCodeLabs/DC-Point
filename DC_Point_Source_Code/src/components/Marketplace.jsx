@@ -11,6 +11,7 @@ import {
   ArrowRight,
   UserCheck
 } from 'lucide-react';
+import { FALLBACK_IMAGES } from '../data/mockData';
 
 export default function Marketplace({ 
   activeMarket, 
@@ -192,11 +193,11 @@ export default function Marketplace({
               {/* Image Preview */}
               <div style={{ position: 'relative', height: '200px', background: '#F1F5F9', overflow: 'hidden' }}>
                 <img 
-                  src={item.image?.startsWith('/') ? '.' + item.image : item.image} 
+                  src={item.image || (item.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag)} 
                   alt={item.title}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = item.type === 'rent' ? './cinema_camera.jpg' : './leather_bag.jpg';
+                    e.target.src = item.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag;
                   }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />

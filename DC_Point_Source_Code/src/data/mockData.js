@@ -1,4 +1,26 @@
 // DC Point - Mock Data & Data Schema
+import leatherBagImg from '../assets/leather_bag.jpg';
+import neonSignImg from '../assets/neon_sign.jpg';
+import pcbBoardImg from '../assets/pcb_board.jpg';
+import honeyJarImg from '../assets/honey_jar.jpg';
+import cinemaCameraImg from '../assets/cinema_camera.jpg';
+
+export const FALLBACK_IMAGES = {
+  leatherBag: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%231E293B"/><rect x="150" y="120" width="300" height="200" rx="16" fill="%23854D0E" stroke="%23CA8A04" stroke-width="4"/><path d="M 200 120 L 200 80 Q 300 50 400 80 L 400 120" fill="none" stroke="%23CA8A04" stroke-width="6"/><rect x="270" y="200" width="60" height="40" rx="6" fill="%23EAB308"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%2394A3B8" text-anchor="middle">Full-Grain Leather Bag</text></svg>',
+  cinemaCamera: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%230F172A"/><rect x="180" y="140" width="200" height="150" rx="12" fill="%231E293B" stroke="%2300ADB5" stroke-width="4"/><circle cx="430" cy="215" r="55" fill="%23334155" stroke="%2300ADB5" stroke-width="6"/><circle cx="430" cy="215" r="30" fill="%230F172A"/><circle cx="230" cy="100" r="35" fill="%231E293B" stroke="%2338BDF8" stroke-width="4"/><circle cx="330" cy="100" r="35" fill="%231E293B" stroke="%2338BDF8" stroke-width="4"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%2338BDF8" text-anchor="middle">Cinema 4K Rig Package</text></svg>',
+  neonSign: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23050B14"/><text x="300" y="210" font-family="sans-serif" font-size="38" font-weight="900" fill="%2300F0FF" text-anchor="middle">DC POINT NEON</text><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%2300F0FF" text-anchor="middle">Glowing Neon Signage</text></svg>',
+  pcbBoard: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23064E3B"/><rect x="100" y="80" width="400" height="240" rx="10" fill="%23047857" stroke="%2310B981" stroke-width="4"/><rect x="250" y="150" width="100" height="100" rx="8" fill="%23065F46" stroke="%23F59E0B" stroke-width="3"/><line x1="120" y1="120" x2="250" y2="170" stroke="%23F59E0B" stroke-width="3"/><line x1="480" y1="280" x2="350" y2="230" stroke="%23F59E0B" stroke-width="3"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%23A7F3D0" text-anchor="middle">PCB Prototype Circuit</text></svg>',
+  honeyJar: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%23451A03"/><rect x="220" y="120" width="160" height="200" rx="30" fill="%23D97706" opacity="0.9" stroke="%23FBBF24" stroke-width="4"/><rect x="240" y="90" width="120" height="30" rx="6" fill="%2378350F"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%23FDE68A" text-anchor="middle">Artisanal Raw Honey</text></svg>'
+};
+
+export const DEFAULT_IMAGES = {
+  leatherBag: leatherBagImg,
+  neonSign: neonSignImg,
+  pcbBoard: pcbBoardImg,
+  honeyJar: honeyJarImg,
+  cinemaCamera: cinemaCameraImg
+};
+
 export const INITIAL_USER_PERSONAS = [
   {
     id: 'user_buyer_1',
@@ -61,7 +83,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 38,
     complianceStatus: 'Verified',
     complianceBadgeText: 'AI Compliance Passed • Legal Contract Ready',
-    image: './leather_bag.jpg',
+    image: leatherBagImg,
     description: 'Custom handmade leather bag built using vegetable-tanned full-grain leather. Custom initials stamping included.',
     specifications: [
       { label: 'Material', value: '100% Full-grain Italian Leather' },
@@ -92,7 +114,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 38,
     complianceStatus: 'Verified',
     complianceBadgeText: 'AI Compliance Passed • Safety Tested',
-    image: './neon_sign.jpg',
+    image: neonSignImg,
     description: 'Custom acrylic LED neon sign for storefronts, event backdrops, or personal studio space. Includes dimmer remote.',
     specifications: [
       { label: 'Tube Spec', value: 'Silicone LED Flexible Tube 12V' },
@@ -123,7 +145,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 22,
     complianceStatus: 'Verified',
     complianceBadgeText: 'IP Safety Standard Verified',
-    image: './pcb_board.jpg',
+    image: pcbBoardImg,
     description: 'Multi-layer FR4 PCB fabrication with pick-and-place component assembly for tech startups and prototype testing.',
     specifications: [
       { label: 'Layers', value: '2 - 6 Layers available' },
@@ -152,7 +174,7 @@ export const INITIAL_PURCHASE_LISTINGS = [
     sellerCompletedTrades: 54,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Food Safety Compliance Checked',
-    image: './honey_jar.jpg',
+    image: honeyJarImg,
     description: 'Unfiltered, unpasteurized cold-extracted raw honey harvested from sustainable forest hives. Glass jars sealed with security strip.',
     specifications: [
       { label: 'Purity', value: '100% Unpasteurized Honey' },
@@ -185,7 +207,7 @@ export const INITIAL_RENT_LISTINGS = [
     sellerCompletedTrades: 62,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Equipment Insurance Verified',
-    image: './cinema_camera.jpg',
+    image: cinemaCameraImg,
     description: 'Complete 4K cinema camera package including Sony FX3 body, 24-70mm f/2.8 GM II lens, wireless mic set, V-mount batteries & Pelican case.',
     specifications: [
       { label: 'Resolution', value: '4K 120fps 10-bit 4:2:2' },
@@ -215,7 +237,7 @@ export const INITIAL_RENT_LISTINGS = [
     sellerCompletedTrades: 41,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Sound Tech Inspected',
-    image: './cinema_camera.jpg',
+    image: cinemaCameraImg,
     description: 'Flagship club standard DJ setup in heavy flight cases. Ready for festivals, corporate events, and wedding performances.',
     specifications: [
       { label: 'Condition', value: 'Pristine Studio Condition' },
@@ -279,7 +301,7 @@ export const MOCK_ACTIVE_TRADES = [
         sender: 'Maya Lin (Seller)',
         timestamp: '2026-07-29 10:15 AM',
         text: 'Leather cutting and initial stitching completed! Hand-embossed "A.M." initials on inner pocket flap as requested.',
-        image: './leather_bag.jpg'
+        image: leatherBagImg
       }
     ],
     timer: {

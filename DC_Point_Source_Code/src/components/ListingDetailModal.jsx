@@ -1,4 +1,5 @@
 import React from 'react';
+import { FALLBACK_IMAGES } from '../data/mockData';
 import { 
   X, 
   ShieldCheck, 
@@ -40,7 +41,7 @@ export default function ListingDetailModal({ listing, onClose, onStartTrade, onV
             {/* Image Preview & Seller info */}
             <div>
               <div style={{ borderRadius: '12px', overflow: 'hidden', height: '260px', background: '#F1F5F9', marginBottom: '1.25rem' }}>
-                <img src={listing.image?.startsWith('/') ? '.' + listing.image : listing.image} alt={listing.title} onError={(e) => { e.target.onerror = null; e.target.src = listing.type === 'rent' ? './cinema_camera.jpg' : './leather_bag.jpg'; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={listing.image || (listing.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag)} alt={listing.title} onError={(e) => { e.target.onerror = null; e.target.src = listing.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
 
               {/* Seller credentials card */}
