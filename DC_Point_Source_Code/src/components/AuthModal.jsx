@@ -7,6 +7,15 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVal, setOtpVal] = useState('');
 
+  // Handle Escape keypress
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handleQuickRoleLogin = (userId) => {
     onLoginSuccess(userId);
   };
@@ -23,18 +32,22 @@ export default function AuthModal({ onClose, onLoginSuccess }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <div className="modal-content" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
         <div className="modal-header" style={{ background: '#0B192C', color: '#FFFFFF' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShieldCheck size={20} color="#00ADB5" />
+            <ShieldCheck size={20} color="#00ADB5" aria-hidden="true" />
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#FFFFFF' }}>DC Point Portal Login</h3>
-              <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Select User Login Role (Buyer or Seller)</div>
+              <h2 id="auth-modal-title" style={{ fontSize: '1.1rem', fontWeight: '800', color: '#FFFFFF' }}>DC Point Portal Login</h2>
+              <div style={{ fontSize: '0.85rem', color: '#CBD5E1' }}>Select User Login Role (Buyer or Seller)</div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#FFFFFF' }}>
-            <X size={20} />
+          <button 
+            onClick={onClose} 
+            style={{ background: 'none', border: 'none', color: '#FFFFFF', minWidth: '44px', minHeight: '44px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            aria-label="Close login dialog"
+          >
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 

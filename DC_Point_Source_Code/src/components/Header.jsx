@@ -57,9 +57,9 @@ export default function Header({
       {/* Top Escrow & Login Role Bar */}
       <div className="persona-bar">
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: '600', fontSize: '0.8rem' }}>
-              <ShieldCheck size={14} /> 100% Escrow Vault Protected
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: '600', fontSize: '0.85rem' }}>
+              <ShieldCheck size={16} aria-hidden="true" /> 100% Escrow Vault Protected
             </div>
 
             {/* Active Persona Banner */}
@@ -67,7 +67,7 @@ export default function Header({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.4rem',
-              padding: '0.15rem 0.6rem',
+              padding: '0.25rem 0.75rem',
               borderRadius: '9999px',
               background: currentUser.id === 'user_admin_1' 
                 ? 'rgba(139, 92, 246, 0.25)' 
@@ -82,7 +82,7 @@ export default function Header({
                     : '#00ADB5'
               }`,
               color: '#FFFFFF',
-              fontSize: '0.75rem',
+              fontSize: '0.85rem',
               fontWeight: '700'
             }}>
               <span>
@@ -104,7 +104,7 @@ export default function Header({
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: '#94A3B8', fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#94A3B8', fontSize: '0.85rem', flexWrap: 'wrap' }}>
             <span style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
@@ -112,12 +112,41 @@ export default function Header({
               color: currentUser.id === 'user_admin_1' ? '#A78BFA' : '#00ADB5',
               fontWeight: '600'
             }}>
-              <Wallet size={14} /> 
+              <Wallet size={14} aria-hidden="true" /> 
               {currentUser.id === 'user_admin_1' ? 'Platform Fee Revenue:' : 'Escrow Wallet:'} 
               <strong style={{ color: currentUser.id === 'user_admin_1' ? '#10B981' : '#FFFFFF' }}>
                 ₹{currentUser.walletBalance.toLocaleString()}
               </strong>
             </span>
+
+            {/* Super Admin Switch to Buyer View / Sandbox Button */}
+            {currentUser.id === 'user_admin_1' && (
+              <button
+                onClick={() => {
+                  onSwitchUser('user_buyer_1');
+                  if (showToast) showToast('🛒 Switched to Buyer View / Sandbox account (Alex Mercer)');
+                }}
+                style={{
+                  background: 'rgba(0, 173, 181, 0.25)',
+                  border: '1px solid #00ADB5',
+                  color: '#FFFFFF',
+                  borderRadius: '6px',
+                  padding: '0.3rem 0.65rem',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontWeight: '700',
+                  minHeight: '36px'
+                }}
+                title="Switch to standard Buyer account to purchase or test storefront items"
+                aria-label="Switch to Buyer View Sandbox"
+              >
+                <UserCheck size={14} aria-hidden="true" />
+                <span>Switch to Buyer View / Sandbox</span>
+              </button>
+            )}
 
             {/* Switch Login Role Shortcut */}
             <button
@@ -127,24 +156,27 @@ export default function Header({
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: '#FFFFFF',
                 borderRadius: '6px',
-                padding: '0.2rem 0.5rem',
-                fontSize: '0.72rem',
+                padding: '0.3rem 0.65rem',
+                fontSize: '0.8rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.3rem'
+                gap: '0.3rem',
+                minHeight: '36px'
               }}
+              aria-label="Switch login persona"
             >
-              <LogIn size={12} />
+              <LogIn size={14} aria-hidden="true" />
               <span>Switch Login</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <div className="container">
+      {/* Main Navbar with nav Landmark */}
+      <nav className="container" aria-label="Main Navigation">
         <div className="nav-main">
+
           {/* Brand Logo */}
           <div 
             className="logo-area" 
@@ -481,7 +513,8 @@ export default function Header({
             )}
           </div>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
+

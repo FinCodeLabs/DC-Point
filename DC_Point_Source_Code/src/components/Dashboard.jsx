@@ -28,7 +28,8 @@ export default function Dashboard({
   allListings, 
   onOpenTradeWizard, 
   onOpenCreateListing,
-  onViewSellerProfile 
+  onViewSellerProfile,
+  onSwitchUser
 }) {
   const isAdminRole = currentUser.id === 'user_admin_1' || currentUser.role?.toLowerCase().includes('admin');
   const isSellerRole = !isAdminRole && (currentUser.id === 'user_seller_1' || currentUser.role?.toLowerCase().includes('seller'));
@@ -44,25 +45,33 @@ export default function Dashboard({
     else setDashTab('my-purchases');
   }, [currentUser.id, isAdminRole, isSellerRole]);
 
-  // Filter listings and trades based on role
+  // Filter listings and trades based on role & status
   const myListings = allListings.filter(l => l.sellerId === currentUser.id);
   const myPurchases = activeTrades.filter(t => t.buyerId === currentUser.id);
+  const activePurchases = myPurchases.filter(t => t.currentStep < 6);
+  const completedPurchases = myPurchases.filter(t => t.currentStep === 6 || t.isPaymentReleased);
+  const activeVaultDeposits = myPurchases.filter(t => t.currentStep >= 3 && t.currentStep < 6);
+
   const mySellerOrders = activeTrades.filter(t => t.sellerId === currentUser.id);
+  const activeSellerOrders = mySellerOrders.filter(t => t.currentStep < 6);
+  const completedSellerOrders = mySellerOrders.filter(t => t.currentStep === 6 || t.isPaymentReleased);
 
   // Role-specific tabs list
   const availableTabs = isAdminRole ? [
     { id: 'admin-commission', label: `👑 5% Platform Escrow Commission Revenue` },
-    { id: 'admin-vault', label: `🔒 Platform Escrow Vault Reserve (${activeTrades.length})` },
+    { id: 'admin-vault', label: `🔒 Platform Escrow Vault Reserve (${activeTrades.filter(t => t.currentStep < 6).length})` },
     { id: 'admin-disputes', label: `⚖️ Resolution Center & Grievances` },
     { id: 'trust-score', label: `🛡️ Governance & System Security` }
   ] : isSellerRole ? [
-    { id: 'seller-orders', label: `📦 Orders To Fulfill as Seller (${mySellerOrders.length})` },
+    { id: 'seller-orders', label: `📦 Orders To Fulfill (${activeSellerOrders.length})` },
+    { id: 'seller-completed', label: `✅ Completed Payouts (${completedSellerOrders.length})` },
     { id: 'my-listings', label: `🎨 My Published Listings (${myListings.length})` },
-    { id: 'seller-earnings', label: `💰 Seller Escrow Payouts & Earnings` },
+    { id: 'seller-earnings', label: `💰 Seller Escrow Earnings` },
     { id: 'trust-score', label: `🛡️ Seller Reputation & Trust` }
   ] : [
-    { id: 'my-purchases', label: `🛒 My Active Purchases & Rentals (${myPurchases.length})` },
-    { id: 'escrow-deposits', label: `🔒 Escrow Vault Deposits (${myPurchases.filter(t => t.currentStep >= 3 && t.currentStep < 6).length})` },
+    { id: 'my-purchases', label: `🛒 Active Purchases & Rentals (${activePurchases.length})` },
+    { id: 'buyer-completed', label: `✅ Completed Trades & History (${completedPurchases.length})` },
+    { id: 'escrow-deposits', label: `🔒 Escrow Vault Deposits (${activeVaultDeposits.length})` },
     { id: 'trust-score', label: `🛡️ Buyer Trust & Verification` }
   ];
 
@@ -114,7 +123,7 @@ export default function Dashboard({
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-              <h2 style={{ fontSize: '1.75rem', color: '#FFFFFF', fontWeight: '800' }}>{currentUser.name}</h2>
+              <h1 style={{ fontSize: '1.75rem', color: '#FFFFFF', fontWeight: '800' }}>{currentUser.name}</h1>
               <span className="badge badge-verified" style={{ 
                 background: isAdminRole ? 'rgba(139, 92, 246, 0.25)' : isSellerRole ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0, 173, 181, 0.2)', 
                 border: `1px solid ${isAdminRole ? '#8B5CF6' : isSellerRole ? '#10B981' : '#00ADB5'}` 
@@ -132,19 +141,31 @@ export default function Dashboard({
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           {isAdminRole ? (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.1rem', background: 'rgba(139, 92, 246, 0.25)', border: '1px solid #8B5CF6', borderRadius: '10px', fontSize: '0.85rem', color: '#A78BFA', fontWeight: '700' }}>
-              <Percent size={18} /> 5% Escrow Commission Rate Active
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.1rem', background: 'rgba(139, 92, 246, 0.25)', border: '1px solid #8B5CF6', borderRadius: '10px', fontSize: '0.85rem', color: '#A78BFA', fontWeight: '700' }}>
+                <Percent size={18} aria-hidden="true" /> 5% Escrow Commission Rate Active
+              </div>
+              <button
+                className="btn-primary"
+                onClick={() => onSwitchUser && onSwitchUser('user_buyer_1')}
+                style={{ background: '#00ADB5', border: 'none', minHeight: '44px' }}
+                title="Switch to standard Buyer account to test or purchase items"
+                aria-label="Switch to Buyer View Sandbox"
+              >
+                <UserCheck size={18} aria-hidden="true" />
+                <span>Switch to Buyer View / Sandbox</span>
+              </button>
             </div>
           ) : isSellerRole ? (
-            <button className="btn-primary" onClick={onOpenCreateListing}>
-              <PlusCircle size={18} />
+            <button className="btn-primary" onClick={onOpenCreateListing} style={{ minHeight: '44px' }}>
+              <PlusCircle size={18} aria-hidden="true" />
               <span>List New Item / Rental</span>
             </button>
           ) : (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '0.85rem', color: '#00ADB5' }}>
-              <Lock size={16} /> All Purchases Backed by 100% Escrow Protection
+              <Lock size={16} aria-hidden="true" /> All Purchases Backed by 100% Escrow Protection
             </div>
           )}
         </div>
@@ -407,17 +428,20 @@ export default function Dashboard({
         </div>
       )}
 
-      {/* BUYER TAB 1: My Purchases & Rentals */}
+      {/* BUYER TAB 1: Active Purchases & Rentals */}
       {dashTab === 'my-purchases' && (
         <div>
-          {myPurchases.length === 0 ? (
+          {activePurchases.length === 0 ? (
             <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
               <ShoppingBag size={44} style={{ color: '#CBD5E1', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.2rem', color: '#475569' }}>No active purchases or rentals</h3>
+              <h3 style={{ fontSize: '1.2rem', color: '#475569' }}>No active ongoing purchases or rentals</h3>
+              <p style={{ color: '#64748B', fontSize: '0.9rem', marginTop: '0.3rem' }}>
+                All completed & settled trades are archived under the <strong>Completed Trades & History</strong> tab.
+              </p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {myPurchases.map(trade => (
+              {activePurchases.map(trade => (
                 <div key={trade.id} className="card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
@@ -430,7 +454,7 @@ export default function Dashboard({
                     <div style={{ background: '#F8FAFC', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0', marginTop: '0.5rem', display: 'inline-flex', gap: '1rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
                       <span>🎨 Seller: <strong>{trade.sellerName}</strong></span>
                       <span>|</span>
-                      <span>Escrow Locked: <strong style={{ color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price).toFixed(2)}</strong></span>
+                      <span>Escrow Vault Locked: <strong style={{ color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price).toFixed(2)}</strong></span>
                     </div>
 
                     {trade.progressUpdates && trade.progressUpdates.length > 0 && (
@@ -440,9 +464,9 @@ export default function Dashboard({
                     )}
                   </div>
 
-                  <button className="btn-navy" onClick={() => onOpenTradeWizard(trade)}>
+                  <button className="btn-navy" onClick={() => onOpenTradeWizard(trade)} style={{ minHeight: '44px' }}>
                     <span>Open Trade Engine</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </button>
                 </div>
               ))}
@@ -451,7 +475,53 @@ export default function Dashboard({
         </div>
       )}
 
-      {/* BUYER TAB 2: Escrow Vault Deposits */}
+      {/* BUYER TAB 2: Completed Trades & History */}
+      {dashTab === 'buyer-completed' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ padding: '1.5rem', background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#047857', fontWeight: '800', fontSize: '1.1rem' }}>
+              <CheckCircle2 size={20} /> Settlement History & Release Proof
+            </div>
+            <p style={{ color: '#047857', fontSize: '0.85rem', marginTop: '0.3rem' }}>
+              The following trades have successfully passed quality inspection and escrow funds have been released to the seller.
+            </p>
+          </div>
+
+          {completedPurchases.length === 0 ? (
+            <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748B' }}>
+              No completed trades yet. Once you inspect and release escrow funds, completed trades appear here!
+            </div>
+          ) : (
+            completedPurchases.map(trade => (
+              <div key={trade.id} className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                    <span className="badge badge-verified" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981' }}>
+                      <CheckCircle2 size={14} aria-hidden="true" /> Step 6 of 6 — Trade Completed & Escrow Released
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Trade #{trade.id}</span>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0B192C' }}>{trade.title}</h3>
+
+                  <div style={{ background: '#F8FAFC', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0', marginTop: '0.5rem', display: 'inline-flex', gap: '1rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
+                    <span>🎨 Seller: <strong>{trade.sellerName}</strong></span>
+                    <span>|</span>
+                    <span>Payout Transferred to Seller: <strong style={{ color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price).toFixed(2)}</strong></span>
+                  </div>
+                </div>
+
+                <button className="btn-outline" onClick={() => onOpenTradeWizard(trade)} style={{ minHeight: '44px' }}>
+                  <span>View Settlement Audit</span>
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* BUYER TAB 3: Escrow Vault Deposits */}
       {dashTab === 'escrow-deposits' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div className="card" style={{ padding: '1.5rem', background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
@@ -463,34 +533,43 @@ export default function Dashboard({
             </p>
           </div>
 
-          {myPurchases.map(trade => (
-            <div key={trade.id} className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h4 style={{ fontWeight: '700', fontSize: '1.05rem' }}>{trade.title}</h4>
-                <div style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '0.2rem' }}>
-                  Seller: {trade.sellerName} • Status: <strong style={{ color: '#00ADB5' }}>{trade.status}</strong>
+          {activeVaultDeposits.length === 0 ? (
+            <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748B' }}>
+              Zero active locked escrow deposits. All completed trade funds have been released and settled.
+            </div>
+          ) : (
+            activeVaultDeposits.map(trade => (
+              <div key={trade.id} className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ fontWeight: '700', fontSize: '1.05rem' }}>{trade.title}</h4>
+                  <div style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '0.2rem' }}>
+                    Seller: {trade.sellerName} • Status: <strong style={{ color: '#00ADB5' }}>{trade.status}</strong>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#94A3B8', textTransform: 'uppercase' }}>Locked Vault Amount</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price).toFixed(2)}</div>
                 </div>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.75rem', color: '#94A3B8', textTransform: 'uppercase' }}>Locked Vault Amount</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price).toFixed(2)}</div>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
       {/* SELLER TAB 1: Seller Orders to Fulfill */}
       {dashTab === 'seller-orders' && (
         <div>
-          {mySellerOrders.length === 0 ? (
+          {activeSellerOrders.length === 0 ? (
             <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
               <Upload size={44} style={{ color: '#CBD5E1', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.2rem', color: '#475569' }}>No buyer orders to fulfill yet</h3>
+              <h3 style={{ fontSize: '1.2rem', color: '#475569' }}>No active buyer orders to fulfill right now</h3>
+              <p style={{ color: '#64748B', fontSize: '0.9rem', marginTop: '0.3rem' }}>
+                Completed & settled orders are archived under the <strong>Completed Payouts</strong> tab.
+              </p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {mySellerOrders.map(trade => (
+              {activeSellerOrders.map(trade => (
                 <div key={trade.id} className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                     <div>
@@ -508,14 +587,60 @@ export default function Dashboard({
                       </div>
                     </div>
 
-                    <button className="btn-primary" onClick={() => onOpenTradeWizard(trade)}>
-                      <Upload size={16} />
+                    <button className="btn-primary" onClick={() => onOpenTradeWizard(trade)} style={{ minHeight: '44px' }}>
+                      <Upload size={16} aria-hidden="true" />
                       <span>Post Work Progress & Photos</span>
                     </button>
                   </div>
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* SELLER TAB 1.5: Completed Payouts */}
+      {dashTab === 'seller-completed' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ padding: '1.5rem', background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#047857', fontWeight: '800', fontSize: '1.1rem' }}>
+              <CheckCircle2 size={20} /> Settled Seller Payouts & Wallet Credits
+            </div>
+            <p style={{ color: '#047857', fontSize: '0.85rem', marginTop: '0.3rem' }}>
+              The following orders have been approved by the customer and payment has been credited to your wallet balance.
+            </p>
+          </div>
+
+          {completedSellerOrders.length === 0 ? (
+            <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748B' }}>
+              No completed payouts recorded yet.
+            </div>
+          ) : (
+            completedSellerOrders.map(trade => (
+              <div key={trade.id} className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #10B981', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                    <span className="badge badge-verified" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981' }}>
+                      <CheckCircle2 size={14} aria-hidden="true" /> Step 6 of 6 — Payout Released to Wallet
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Trade #{trade.id}</span>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0B192C' }}>{trade.title}</h3>
+
+                  <div style={{ background: '#F8FAFC', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0', marginTop: '0.5rem', display: 'inline-flex', gap: '1rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
+                    <span>🛒 Buyer: <strong>{trade.buyerName}</strong></span>
+                    <span>|</span>
+                    <span>Earnings Credited: <strong style={{ color: '#10B981' }}>₹{trade.price.toFixed(2)}</strong></span>
+                  </div>
+                </div>
+
+                <button className="btn-outline" onClick={() => onOpenTradeWizard(trade)} style={{ minHeight: '44px' }}>
+                  <span>View Payout Details</span>
+                  <ArrowRight size={16} aria-hidden="true" />
+                </button>
+              </div>
+            ))
           )}
         </div>
       )}

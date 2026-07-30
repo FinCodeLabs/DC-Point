@@ -30,6 +30,15 @@ import {
 } from 'lucide-react';
 
 export default function CreateListingModal({ onClose, onCreateSuccess, currentUser }) {
+  // Handle Escape keypress
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const PRESET_IMAGES = [
     { label: 'Leather Crafts', src: leatherBagImg },
     { label: 'Cinema Camera', src: cinemaCameraImg },
@@ -100,33 +109,26 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
       (formData.type === 'rent' ? cinemaCameraImg : leatherBagImg);
 
     const newListing = {
-      id: `prod-${Date.now()}`,
+      id: `listing-${Date.now().toString().slice(-4)}`,
       title: formData.title,
-      category: formData.category,
-      type: formData.type,
-      price: parseFloat(formData.price),
-      unit: formData.unit,
-      rentalDeposit: formData.type === 'rent' ? parseFloat(formData.rentalDeposit) : 0,
       sellerId: currentUser.id,
       sellerName: currentUser.name,
-      sellerRating: currentUser.rating || 4.95,
-      sellerCompletedTrades: currentUser.completedTrades || 1,
-      complianceStatus: 'Verified',
-      complianceBadgeText: 'AI Compliance Passed • Legal Contract Ready',
-      image: finalImage,
+      sellerRating: currentUser.rating || 4.9,
+      sellerCompletedTrades: currentUser.completedTrades || 10,
+      price: parseFloat(formData.price) || 500,
+      unit: formData.type === 'rent' ? `${formData.unit} (Rental)` : formData.unit,
+      category: formData.category,
+      type: formData.type,
       description: formData.description,
-      specifications: [
-        { label: 'Category', value: formData.category },
-        { label: 'Lead Time', value: `${formData.deliveryTimeframeDays} Business Days` },
-        { label: 'Customization', value: formData.customizationOptions }
-      ],
+      image: finalImage,
+      complianceStatus: 'Passed Compliance Scan',
       sampleAgreementTerms: {
-        deliveryWindowDays: parseInt(formData.deliveryTimeframeDays),
-        inspectionWindowHours: parseInt(formData.inspectionWindowHours),
-        allowCustomPackaging: true,
-        qualityStandard: 'Zero defect surface, pre-delivery photo proof required'
+        deliveryWindowDays: parseInt(formData.deliveryTimeframeDays) || 5,
+        inspectionWindowHours: parseInt(formData.inspectionWindowHours) || 48,
+        qualityStandard: 'Handcrafted / Grade A Specs',
+        customNotes: formData.customizationOptions
       },
-      suggested: true,
+      verifiedBadge: true,
       bestSeller: false
     };
 
@@ -134,20 +136,24 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="create-listing-modal-title">
       <div className="modal-content" style={{ maxWidth: '780px' }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ background: '#00ADB5', color: '#FFFFFF', padding: '0.35rem', borderRadius: '8px' }}>
-              <PlusCircle size={18} />
+              <PlusCircle size={18} aria-hidden="true" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '700' }}>Seller Studio — List Item or Service</h3>
-              <div style={{ fontSize: '0.75rem', color: '#64748B' }}>AI Compliance & Legal Agreement Generator</div>
+              <h2 id="create-listing-modal-title" style={{ fontSize: '1.15rem', fontWeight: '700' }}>Seller Studio — List Item or Service</h2>
+              <div style={{ fontSize: '0.85rem', color: '#475569' }}>AI Compliance & Legal Agreement Generator</div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#64748B' }}>
-            <X size={20} />
+          <button 
+            onClick={onClose} 
+            style={{ background: 'none', border: 'none', color: '#475569', minWidth: '44px', minHeight: '44px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            aria-label="Close dialog"
+          >
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 

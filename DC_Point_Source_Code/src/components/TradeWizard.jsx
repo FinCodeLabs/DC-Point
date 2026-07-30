@@ -24,6 +24,15 @@ import confetti from 'canvas-confetti';
 export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenDispute, onClose, onAddNotification, onUpdateWalletBalance, showToast }) {
   if (!trade) return null;
 
+  // Handle Escape keypress
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const [activeStep, setActiveStep] = useState(trade.currentStep || 1);
 
   // Check role of current logged-in user
@@ -99,9 +108,21 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!inputMsg.trim()) return;
-    setChatMessages([...chatMessages, { sender: currentUser.name, text: inputMsg, time: 'Just now' }]);
+
+    const newMsg = {
+      sender: currentUser.name,
+      text: inputMsg,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    const updatedMessages = [...chatMessages, newMsg];
+    setChatMessages(updatedMessages);
     setInputMsg('');
-    if (showToast) showToast('Message sent to counterparty!');
+
+    onUpdateTrade({
+      ...trade,
+      initialChatMessages: updatedMessages
+    });
   };
 
   const handleAddProgressUpdate = (e) => {

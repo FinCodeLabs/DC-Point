@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import Marketplace from './components/Marketplace';
@@ -23,6 +23,20 @@ export default function App() {
   // Navigation & Market States
   const [activeMarket, setActiveMarket] = useState('purchase'); // 'purchase' | 'rent'
   const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'marketplace' | 'dashboard'
+
+  // Handle SPA GitHub Pages routing redirect restore
+  useEffect(() => {
+    const redirectPath = sessionStorage.getItem('redirect_path');
+    if (redirectPath) {
+      sessionStorage.removeItem('redirect_path');
+      if (redirectPath.includes('marketplace')) {
+        setCurrentTab('marketplace');
+      } else if (redirectPath.includes('dashboard')) {
+        setCurrentTab('dashboard');
+      }
+    }
+  }, []);
+
 
   // User Personas & Active Session
   const [allUsers, setAllUsers] = useState(INITIAL_USER_PERSONAS);
@@ -208,7 +222,7 @@ export default function App() {
       />
 
       {/* Main View Controller */}
-      <main style={{ flex: '1' }}>
+      <main id="main-content" tabIndex="-1" style={{ flex: '1', outline: 'none' }}>
         {currentTab === 'home' && (
           <LandingPage 
             onExploreMarket={(marketType) => {
@@ -240,6 +254,7 @@ export default function App() {
             onOpenTradeWizard={(trade) => setActiveTradeForWizard(trade)}
             onOpenCreateListing={() => setIsCreateListingOpen(true)}
             onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
+            onSwitchUser={handleSwitchUser}
           />
         )}
       </main>
@@ -253,6 +268,8 @@ export default function App() {
           onClose={() => setSelectedListing(null)}
           onStartTrade={handleStartTrade}
           onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
+          currentUser={currentUser}
+          onSwitchUser={handleSwitchUser}
         />
       )}
 

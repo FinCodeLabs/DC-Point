@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Filter, 
@@ -9,9 +9,12 @@ import {
   ShoppingBag, 
   Sparkles,
   ArrowRight,
-  UserCheck
+  UserCheck,
+  WifiOff
 } from 'lucide-react';
 import { FALLBACK_IMAGES } from '../data/mockData';
+import ErrorStateCard from './ErrorStateCard';
+import GridSkeletonLoader from './LoadingSkeleton';
 
 export default function Marketplace({ 
   activeMarket, 
@@ -25,13 +28,25 @@ export default function Marketplace({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('rating');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSimulatedError, setIsSimulatedError] = useState(false);
 
   const isSeller = currentUser?.id === 'user_seller_1' || currentUser?.role?.toLowerCase().includes('seller');
 
-  // Reset category filter when switching between Purchase and Rent markets
-  React.useEffect(() => {
+  // Trigger loading skeleton on category / market switch
+  useEffect(() => {
+    setIsLoading(true);
     setSelectedCategory('All');
+    const timer = setTimeout(() => setIsLoading(false), 300);
+    return () => clearTimeout(timer);
   }, [activeMarket]);
+
+  const handleCategorySelect = (cat) => {
+    setIsLoading(true);
+    setSelectedCategory(cat);
+    setTimeout(() => setIsLoading(false), 250);
+  };
+
 
   const categories = activeMarket === 'purchase' 
     ? ['All', 'Craft & Goods', 'Tech & Electronics', 'Industrial & Tools']
@@ -83,9 +98,9 @@ export default function Marketplace({
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
             <ShieldCheck size={16} /> Legal Trade Protection Enabled
           </div>
-          <h2 style={{ fontSize: '2rem', color: '#FFFFFF', fontWeight: '800' }}>
+          <h1 style={{ fontSize: '2rem', color: '#FFFFFF', fontWeight: '800' }}>
             {activeMarket === 'purchase' ? 'Purchase Marketplace' : 'Rent & Equipment Market'}
-          </h2>
+          </h1>
           <p style={{ color: '#94A3B8', fontSize: '0.95rem', marginTop: '0.2rem' }}>
             {activeMarket === 'purchase' 
               ? 'Buy verified custom products & services backed by binding escrow trade contracts.' 
@@ -159,6 +174,28 @@ export default function Marketplace({
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
             </select>
+
+            {/* Network Test Simulation Toggle */}
+            <button
+              onClick={() => setIsSimulatedError(!isSimulatedError)}
+              style={{
+                background: isSimulatedError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(100, 116, 139, 0.1)',
+                border: `1px solid ${isSimulatedError ? '#EF4444' : '#CBD5E1'}`,
+                color: isSimulatedError ? '#EF4444' : '#64748B',
+                borderRadius: '8px',
+                padding: '0.55rem 0.85rem',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                minHeight: '44px'
+              }}
+              title="Test API Fallback State"
+            >
+              <WifiOff size={14} />
+              <span>{isSimulatedError ? 'Clear Simulated Error' : 'Simulate API Error'}</span>
+            </button>
           </div>
         </div>
 
@@ -167,7 +204,7 @@ export default function Marketplace({
           {categories.map(cat => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => handleCategorySelect(cat)}
               style={{
                 padding: '0.35rem 0.9rem',
                 borderRadius: '9999px',
@@ -175,7 +212,8 @@ export default function Marketplace({
                 fontWeight: '600',
                 background: selectedCategory === cat ? '#0B192C' : '#F1F5F9',
                 color: selectedCategory === cat ? '#FFFFFF' : '#475569',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                minHeight: '36px'
               }}
             >
               {cat}
@@ -189,19 +227,35 @@ export default function Marketplace({
         <Sparkles size={18} color="#00ADB5" />
         <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Verified Marketplace Listings</h3>
         <span className="badge badge-verified" style={{ marginLeft: 'auto' }}>
-          {filteredListings.length} Available
+          {isLoading ? 'Loading...' : `${filteredListings.length} Available`}
         </span>
       </div>
 
-      {/* Listing Cards Grid */}
-      {filteredListings.length === 0 ? (
-        <div className="card" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-          <ShoppingBag size={48} style={{ color: '#CBD5E1', marginBottom: '1rem' }} />
-          <h3 style={{ color: '#475569' }}>No listings found matching your search</h3>
-          <p style={{ color: '#94A3B8', fontSize: '0.9rem', marginTop: '0.25rem' }}>
-            Try clearing search filters or switch between Purchase and Rent markets.
-          </p>
-        </div>
+      {/* Conditional Rendering: Network Error -> Loading Skeleton -> Empty State -> Listings Grid */}
+      {isSimulatedError ? (
+        <ErrorStateCard
+          type="network"
+          title="Network Connection Interrupted"
+          message="Failed to synchronize marketplace items with DC-Point Escrow Nodes. Check network connection and retry."
+          errorDetails={{ status: 503, code: "ERR_ESCROW_NODE_TIMEOUT", message: "Escrow node RPC timed out after 5000ms" }}
+          onRetry={() => {
+            setIsLoading(true);
+            setIsSimulatedError(false);
+            setTimeout(() => setIsLoading(false), 400);
+          }}
+        />
+      ) : isLoading ? (
+        <GridSkeletonLoader count={6} />
+      ) : filteredListings.length === 0 ? (
+        <ErrorStateCard
+          type="empty"
+          title="No Verified Listings Found"
+          message={`No ${activeMarket} listings matched "${searchQuery || selectedCategory}". Try clearing search filters or switching categories.`}
+          onRetry={() => {
+            setSearchQuery('');
+            setSelectedCategory('All');
+          }}
+        />
       ) : (
         <div className="grid-3">
           {filteredListings.map(item => (
@@ -210,7 +264,7 @@ export default function Marketplace({
               <div style={{ position: 'relative', height: '200px', background: '#F1F5F9', overflow: 'hidden' }}>
                 <img 
                   src={item.image || (item.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag)} 
-                  alt={item.title}
+                  alt={`${item.title} - ${item.category} listed by ${item.sellerName}`}
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = item.type === 'rent' ? FALLBACK_IMAGES.cinemaCamera : FALLBACK_IMAGES.leatherBag;
@@ -221,14 +275,14 @@ export default function Marketplace({
                 {/* Compliance Stamp */}
                 <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
                   <span className="badge badge-verified" style={{ backdropFilter: 'blur(4px)', background: 'rgba(236, 253, 245, 0.95)' }}>
-                    <ShieldCheck size={12} /> Compliance Passed
+                    <ShieldCheck size={12} aria-hidden="true" /> Compliance Passed
                   </span>
                 </div>
 
                 {item.type === 'rent' && (
                   <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
                     <span className="badge badge-warning">
-                      <Repeat size={12} /> For Rent
+                      <Repeat size={12} aria-hidden="true" /> For Rent
                     </span>
                   </div>
                 )}
@@ -238,19 +292,19 @@ export default function Marketplace({
               <div style={{ padding: '1.25rem', flex: '1', display: 'flex', flexDirection: 'column' }}>
                 {/* Category & Rating */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#00ADB5', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#007A80', textTransform: 'uppercase' }}>
                     {item.category}
                   </span>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: '700', color: '#D97706' }}>
-                    <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                    <Star size={14} fill="#F59E0B" color="#F59E0B" aria-hidden="true" />
                     <span>{item.sellerRating}</span>
-                    <span style={{ color: '#94A3B8', fontWeight: '400', fontSize: '0.75rem' }}>({item.sellerCompletedTrades} trades)</span>
+                    <span style={{ color: '#475569', fontWeight: '500', fontSize: '0.8rem' }}>({item.sellerCompletedTrades} trades)</span>
                   </div>
                 </div>
 
                 {/* Title */}
-                <h4 style={{
+                <h2 style={{
                   fontSize: '1.05rem',
                   fontWeight: '700',
                   lineHeight: '1.35',
@@ -262,12 +316,12 @@ export default function Marketplace({
                   overflow: 'hidden'
                 }}>
                   {item.title}
-                </h4>
+                </h2>
 
                 {/* Description */}
                 <p style={{
-                  fontSize: '0.85rem',
-                  color: '#64748B',
+                  fontSize: '0.875rem',
+                  color: '#475569',
                   lineHeight: '1.5',
                   marginBottom: '1rem',
                   display: '-webkit-box',
@@ -284,6 +338,15 @@ export default function Marketplace({
                     e.stopPropagation();
                     onViewSellerProfile(item.sellerId);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onViewSellerProfile(item.sellerId);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`View seller profile for ${item.sellerName}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -293,36 +356,52 @@ export default function Marketplace({
                     borderRadius: '8px',
                     marginBottom: '1.25rem',
                     cursor: 'pointer',
-                    border: '1px solid #F1F5F9'
+                    border: '1px solid #E2E8F0',
+                    minHeight: '44px'
                   }}
                 >
-                  <UserCheck size={16} color="#00ADB5" />
-                  <span style={{ fontSize: '0.8rem', fontWeight: '600', color: '#334155' }}>
+                  <UserCheck size={16} color="#007A80" aria-hidden="true" />
+                  <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1E293B' }}>
                     {item.sellerName}
                   </span>
-                  <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: '#10B981', fontWeight: '600' }}>
+                  <span style={{ marginLeft: 'auto', fontSize: '0.8rem', color: '#047857', fontWeight: '700' }}>
                     Verified
                   </span>
                 </div>
 
                 {/* Price & Action Button */}
-                <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: '#94A3B8', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#475569', textTransform: 'uppercase', fontWeight: '600' }}>
                       {item.type === 'rent' ? 'Rental Rate' : 'Escrow Price'}
                     </div>
                     <div style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0B192C' }}>
-                      ₹{item.price} <span style={{ fontSize: '0.8rem', fontWeight: '500', color: '#64748B' }}>/{item.unit.split(' ')[0]}</span>
+                      ₹{item.price} <span style={{ fontSize: '0.85rem', fontWeight: '500', color: '#475569' }}>/{item.unit.split(' ')[0]}</span>
                     </div>
                   </div>
 
-                  <button 
-                    className="btn-navy btn-sm"
-                    onClick={() => onSelectListing(item)}
-                  >
-                    <span>{item.type === 'rent' ? 'Rent Now' : 'I Want This'}</span>
-                    <ArrowRight size={14} />
-                  </button>
+                  {currentUser?.id === 'user_admin_1' ? (
+                    <button 
+                      className="btn-outline btn-sm"
+                      onClick={() => onSelectListing(item)}
+                      style={{ fontSize: '0.8rem', color: '#8B5CF6', borderColor: '#8B5CF6', minHeight: '44px' }}
+                      title="Inspect listing details as Super Admin"
+                      aria-label={`Inspect ${item.title} as Super Admin`}
+                    >
+                      <span>Inspect Listing</span>
+                      <ArrowRight size={14} aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <button 
+                      className="btn-navy btn-sm"
+                      onClick={() => onSelectListing(item)}
+                      style={{ minHeight: '44px' }}
+                      aria-label={item.type === 'rent' ? `Rent ${item.title}` : `Purchase ${item.title}`}
+                    >
+                      <span>{item.type === 'rent' ? 'Rent Now' : 'I Want This'}</span>
+                      <ArrowRight size={14} aria-hidden="true" />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
