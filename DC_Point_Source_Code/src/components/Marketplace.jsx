@@ -19,11 +19,14 @@ export default function Marketplace({
   listings, 
   onSelectListing, 
   onOpenCreateListing,
-  onViewSellerProfile
+  onViewSellerProfile,
+  currentUser
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('rating');
+
+  const isSeller = currentUser?.id === 'user_seller_1' || currentUser?.role?.toLowerCase().includes('seller');
 
   // Reset category filter when switching between Purchase and Rent markets
   React.useEffect(() => {
@@ -90,13 +93,19 @@ export default function Marketplace({
           </p>
         </div>
 
-        <button 
-          className="btn-primary" 
-          onClick={onOpenCreateListing}
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          {activeMarket === 'purchase' ? 'List Product / Service' : 'List Item for Rent'}
-        </button>
+        {isSeller ? (
+          <button 
+            className="btn-primary" 
+            onClick={onOpenCreateListing}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            {activeMarket === 'purchase' ? 'List Product / Service' : 'List Item for Rent'}
+          </button>
+        ) : (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0, 173, 181, 0.15)', border: '1px solid #00ADB5', padding: '0.6rem 1.1rem', borderRadius: '10px', color: '#00ADB5', fontSize: '0.85rem', fontWeight: '700' }}>
+            <ShieldCheck size={18} /> Buyer Escrow Guarantee Active
+          </div>
+        )}
       </div>
 
       {/* Filter & Search Bar */}

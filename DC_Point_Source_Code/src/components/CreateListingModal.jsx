@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
 import { DEFAULT_IMAGES } from '../data/mockData';
+import leatherBagImg from '../assets/leather_bag.jpg';
+import neonSignImg from '../assets/neon_sign.jpg';
+import pcbBoardImg from '../assets/pcb_board.jpg';
+import honeyJarImg from '../assets/honey_jar.jpg';
+import cinemaCameraImg from '../assets/cinema_camera.jpg';
+import djSystemImg from '../assets/dj_system.png';
+import droneRigImg from '../assets/drone_rig.png';
+import audioPackImg from '../assets/audio_pack.png';
+import lightingKitImg from '../assets/lighting_kit.png';
+import woodKeyboardImg from '../assets/wood_keyboard.png';
+import edcToolImg from '../assets/edc_tool.png';
+import alpacaBlanketImg from '../assets/alpaca_blanket.png';
+import redCameraImg from '../assets/red_camera.png';
+import vrCameraImg from '../assets/vr_camera.png';
+import strobePackImg from '../assets/strobe_pack.png';
 import { 
   X, 
   ShieldCheck, 
@@ -10,10 +25,29 @@ import {
   PlusCircle, 
   FileText,
   Lock,
-  Upload
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function CreateListingModal({ onClose, onCreateSuccess, currentUser }) {
+  const PRESET_IMAGES = [
+    { label: 'Leather Crafts', src: leatherBagImg },
+    { label: 'Cinema Camera', src: cinemaCameraImg },
+    { label: 'Neon Signage', src: neonSignImg },
+    { label: 'Wood Keyboard', src: woodKeyboardImg },
+    { label: 'DJ System', src: djSystemImg },
+    { label: 'Drone Rig', src: droneRigImg },
+    { label: 'Audio Pack', src: audioPackImg },
+    { label: 'Studio Light', src: lightingKitImg },
+    { label: 'EDC Tool', src: edcToolImg },
+    { label: 'PCB Board', src: pcbBoardImg },
+    { label: 'Honey Jar', src: honeyJarImg },
+    { label: 'Alpaca Wool', src: alpacaBlanketImg },
+    { label: 'RED Camera', src: redCameraImg },
+    { label: 'VR Camera', src: vrCameraImg },
+    { label: 'Strobe Flash', src: strobePackImg }
+  ];
+
   const [formData, setFormData] = useState({
     title: '',
     category: 'Craft & Goods',
@@ -24,7 +58,9 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
     description: '',
     customizationOptions: 'Custom size, embossed initials, custom packaging box',
     deliveryTimeframeDays: '5',
-    inspectionWindowHours: '48'
+    inspectionWindowHours: '48',
+    selectedImageSrc: leatherBagImg,
+    customImageUrl: ''
   });
 
   const [scanState, setScanState] = useState('idle'); // 'idle' | 'scanning' | 'passed'
@@ -60,6 +96,9 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
   };
 
   const handleFinalPublish = () => {
+    const finalImage = formData.customImageUrl.trim() || formData.selectedImageSrc || 
+      (formData.type === 'rent' ? cinemaCameraImg : leatherBagImg);
+
     const newListing = {
       id: `prod-${Date.now()}`,
       title: formData.title,
@@ -74,7 +113,7 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
       sellerCompletedTrades: currentUser.completedTrades || 1,
       complianceStatus: 'Verified',
       complianceBadgeText: 'AI Compliance Passed • Legal Contract Ready',
-      image: formData.type === 'rent' ? DEFAULT_IMAGES.cinemaCamera : DEFAULT_IMAGES.leatherBag,
+      image: finalImage,
       description: formData.description,
       specifications: [
         { label: 'Category', value: formData.category },
@@ -231,6 +270,74 @@ export default function CreateListingModal({ onClose, onCreateSuccess, currentUs
                   style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
                   required
                 />
+              </div>
+
+              {/* Product Image Picker */}
+              <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0B192C', fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.6rem' }}>
+                  <ImageIcon size={16} color="#00ADB5" /> Product Image Options
+                </div>
+
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#64748B', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  Choose from suitable preset images or provide a custom image URL:
+                </label>
+
+                {/* Thumbnail Preset Grid */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))',
+                  gap: '0.5rem',
+                  maxHeight: '130px',
+                  overflowY: 'auto',
+                  padding: '0.25rem',
+                  marginBottom: '0.75rem',
+                  background: '#FFFFFF',
+                  borderRadius: '8px',
+                  border: '1px solid #E2E8F0'
+                }}>
+                  {PRESET_IMAGES.map((imgItem, idx) => {
+                    const isSelected = formData.selectedImageSrc === imgItem.src && !formData.customImageUrl;
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setFormData(prev => ({ ...prev, selectedImageSrc: imgItem.src, customImageUrl: '' }))}
+                        style={{
+                          border: isSelected ? '2px solid #00ADB5' : '1px solid #E2E8F0',
+                          borderRadius: '6px',
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                          background: isSelected ? '#E0F2FE' : '#FFFFFF',
+                          textAlign: 'center',
+                          padding: '2px',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <img 
+                          src={imgItem.src} 
+                          alt={imgItem.label} 
+                          style={{ width: '100%', height: '40px', objectFit: 'cover', borderRadius: '4px' }} 
+                        />
+                        <div style={{ fontSize: '0.65rem', fontWeight: '600', color: isSelected ? '#00ADB5' : '#475569', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                          {imgItem.label}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748B', marginBottom: '0.25rem' }}>
+                    Or Custom Image URL:
+                  </label>
+                  <input
+                    type="url"
+                    name="customImageUrl"
+                    placeholder="https://images.unsplash.com/... or data:image/..."
+                    value={formData.customImageUrl}
+                    onChange={handleChange}
+                    style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.85rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+                  />
+                </div>
               </div>
 
               {/* Trade Contract Settings */}

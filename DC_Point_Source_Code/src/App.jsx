@@ -228,6 +228,7 @@ export default function App() {
             onSelectListing={(item) => setSelectedListing(item)}
             onOpenCreateListing={() => setIsCreateListingOpen(true)}
             onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
+            currentUser={currentUser}
           />
         )}
 

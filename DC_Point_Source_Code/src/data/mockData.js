@@ -286,6 +286,95 @@ export const INITIAL_PURCHASE_LISTINGS = [
     },
     suggested: true,
     bestSeller: true
+  },
+  {
+    id: 'prod-008',
+    title: 'Handcrafted Leather Backpack & Travel Duffel Weekender Set',
+    category: 'Craft & Goods',
+    type: 'purchase',
+    price: 225,
+    unit: 'per set',
+    sellerId: 'user_seller_1',
+    sellerName: 'Maya Lin (CraftedStudio)',
+    sellerRating: 4.96,
+    sellerCompletedTrades: 38,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'AI Compliance Passed • Full Leather Certification',
+    image: leatherBagImg,
+    description: 'Premium full-grain heritage tan leather weekender duffel and matching laptop backpack with solid brass hardware, YKK waterproof zippers, and reinforced leather handles.',
+    specifications: [
+      { label: 'Material', value: 'Full-Grain Italian Calfskin Leather' },
+      { label: 'Capacity', value: 'Backpack 22L + Duffel 45L' },
+      { label: 'Crafting Time', value: '4-6 Business Days' },
+      { label: 'Warranty', value: 'Lifetime Hardware Guarantee' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 6,
+      inspectionWindowHours: 48,
+      allowCustomPackaging: true,
+      qualityStandard: 'Hand-stitched seam tension check & brass zipper stress test',
+      customNotes: 'Emboss initials A.M. on the leather luggage tag.'
+    },
+    suggested: true,
+    bestSeller: true
+  },
+  {
+    id: 'prod-009',
+    title: 'Custom Modular Ergonomic Split Mechanical Keyboard (Solid Walnut Case)',
+    category: 'Tech & Electronics',
+    type: 'purchase',
+    price: 310,
+    unit: 'per unit',
+    sellerId: 'user_buyer_1',
+    sellerName: 'Alex Mercer (TimberTech Studios)',
+    sellerRating: 4.93,
+    sellerCompletedTrades: 19,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'AI Compliance Passed • Certified Ergonomic Build',
+    image: woodKeyboardImg,
+    description: 'Split column-staggered ergonomic mechanical keyboard housed in CNC machined American Walnut with hot-swappable lubricated switches, OLED status displays, and per-key RGB backlighting.',
+    specifications: [
+      { label: 'Layout', value: '36-key Split Ortholinear Ergonomic' },
+      { label: 'Microcontroller', value: 'Dual RP2040 microcontrollers with ZMK Firmware' },
+      { label: 'Case', value: 'Hand-oiled Solid American Walnut' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 7,
+      inspectionWindowHours: 48,
+      qualityStandard: 'Switch actuation test video & Bluetooth latency check',
+      customNotes: 'Include custom braided TRRS cable and magnetic wrist supports.'
+    },
+    suggested: true,
+    bestSeller: false
+  },
+  {
+    id: 'prod-010',
+    title: 'Precision Brass & Solid Copper Nautical Field Compass & Sundial Set',
+    category: 'Industrial & Tools',
+    type: 'purchase',
+    price: 145,
+    unit: 'per piece',
+    sellerId: 'seller_circuit_master',
+    sellerName: 'Apex Circuit Lab',
+    sellerRating: 4.88,
+    sellerCompletedTrades: 22,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'IP Safety Standard Verified',
+    image: edcToolImg,
+    description: 'Antique-inspired heavy brass magnetic field compass with integrated sundial, optical glass lens, and hand-stitched leather belt holster. Individually calibrated for true magnetic declination.',
+    specifications: [
+      { label: 'Material', value: 'Solid Antiqued Brass & Pure Copper' },
+      { label: 'Accuracy', value: 'Magnetic Bearing ±0.5 Degrees' },
+      { label: 'Case', value: 'Custom Hardwood Velvet Storage Crate' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 4,
+      inspectionWindowHours: 24,
+      qualityStandard: 'Dampened needle balance test & brass polish inspection',
+      customNotes: 'Include laser-engraved dedication plaque inside wooden box.'
+    },
+    suggested: false,
+    bestSeller: true
   }
 ];
 
@@ -529,6 +618,156 @@ export const INITIAL_RENT_LISTINGS = [
     },
     suggested: true,
     bestSeller: false
+  },
+  {
+    id: 'rent-009',
+    title: 'Sony FX6 Cinema Line Full-Frame Camera System & Zoom Lens Package',
+    category: 'Rentals',
+    type: 'rent',
+    price: 175,
+    unit: 'per day',
+    rentalDeposit: 350,
+    sellerId: 'seller_cine_rentals',
+    sellerName: 'FrameRate Cine Equipment',
+    sellerRating: 4.98,
+    sellerCompletedTrades: 62,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Equipment Insurance Verified',
+    image: cinemaCameraImg,
+    description: 'Sony FX6 full-frame cinema camera featuring 4K 120fps, electronic variable ND filter, FE 24-105mm f/4 G OSS lens, top handle with dual XLR inputs, and 2x 160GB TOUGH cards.',
+    specifications: [
+      { label: 'Sensor', value: '4K Full-Frame Back-Illuminated Exmor R CMOS' },
+      { label: 'Base ISO', value: 'Dual Base ISO 800 & 12800' },
+      { label: 'Security Deposit', value: '₹350 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Electronic ND filter test & sensor cleanliness video proof',
+      customNotes: 'Include extra BPU60 high capacity batteries.'
+    },
+    suggested: true,
+    bestSeller: true
+  },
+  {
+    id: 'rent-010',
+    title: 'DJI Ronin 4D 6K 4-Axis Cinema Gimbal Combo with Wireless Video Transmitter',
+    category: 'Rentals',
+    type: 'rent',
+    price: 230,
+    unit: 'per day',
+    rentalDeposit: 500,
+    sellerId: 'seller_aerial_fx',
+    sellerName: 'AerialVision FX',
+    sellerRating: 4.97,
+    sellerCompletedTrades: 58,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'FAA Certified & Production Insured',
+    image: droneRigImg,
+    description: 'Revolutionary 4-axis stabilized 6K cinema camera featuring LiDAR focusing system, Zenmuse X9-6K camera, 4D Hand Grips, High-Bright Remote Monitor, and Wireless Video Transmitter.',
+    specifications: [
+      { label: 'Stabilization', value: '4-Axis Active Z-Axis Vertical Stabilization' },
+      { label: 'Recording', value: '6K ProRes 422 HQ / RAW' },
+      { label: 'Security Deposit', value: '₹500 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Z-Axis motor calibration & LiDAR rangefinder accuracy test',
+      customNotes: 'Include DJI High-Bright Remote Monitor for focus puller.'
+    },
+    suggested: true,
+    bestSeller: false
+  },
+  {
+    id: 'rent-011',
+    title: 'Profoto B10X Plus 500Ws OCF Location Flash Light & Softbox Kit',
+    category: 'Rentals',
+    type: 'rent',
+    price: 155,
+    unit: 'per day',
+    rentalDeposit: 300,
+    sellerId: 'seller_flashworks',
+    sellerName: 'FlashWorks Studio Rentals',
+    sellerRating: 4.96,
+    sellerCompletedTrades: 51,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Electrical Safety Inspected',
+    image: strobePackImg,
+    description: 'Compact 500Ws battery-powered off-camera flash kit featuring 2x B10X Plus heads with 3250 lumen continuous LED modeling light, OCF Softboxes, stands, and Air Remote TTL.',
+    specifications: [
+      { label: 'Power Output', value: '500Ws (10 f-stop range)' },
+      { label: 'Battery Life', value: 'Up to 400 full-power flashes per charge' },
+      { label: 'Security Deposit', value: '₹300 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Battery health check & TTL trigger sync test photo',
+      customNotes: 'Include fast multi-battery charger and backpack case.'
+    },
+    suggested: false,
+    bestSeller: true
+  },
+  {
+    id: 'rent-012',
+    title: 'Shure Axient Digital Wireless Receiver & Dual Handheld/Bodypack Package',
+    category: 'Rentals',
+    type: 'rent',
+    price: 120,
+    unit: 'per day',
+    rentalDeposit: 250,
+    sellerId: 'seller_sound_studio',
+    sellerName: 'Sonic Studio Gear',
+    sellerRating: 4.94,
+    sellerCompletedTrades: 33,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Frequency Scan Calibrated',
+    image: audioPackImg,
+    description: 'Broadcast-grade Shure AD4D dual-channel digital wireless system with Beta 87A handheld transmitters, AD1 bodypacks, DPA lavaliers, and active directional paddle antennas.',
+    specifications: [
+      { label: 'RF Tuning Range', value: '166 MHz Ultra-Wide Tuning Range' },
+      { label: 'Audio Response', value: '20 Hz - 20 kHz Flat Frequency Response' },
+      { label: 'Security Deposit', value: '₹250 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 6,
+      qualityStandard: 'RF interference scan log & capsule frequency response test',
+      customNotes: 'Include active directional paddle antennas and BNC cables.'
+    },
+    suggested: true,
+    bestSeller: false
+  },
+  {
+    id: 'rent-013',
+    title: 'RED Komodo-X 6K Digital Cinema Production Camera & Anamorphic Kit',
+    category: 'Rentals',
+    type: 'rent',
+    price: 280,
+    unit: 'per day',
+    rentalDeposit: 650,
+    sellerId: 'seller_cinestar',
+    sellerName: 'CineStar Motion Equipment',
+    sellerRating: 4.99,
+    sellerCompletedTrades: 84,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Full Production Insurance Linked',
+    image: redCameraImg,
+    description: 'RED Komodo-X 6K global shutter cinema camera package featuring 6K 80fps, 4K 120fps, DSMC3 RED Touch 7.0" LCD, CFexpress Type B cards, V-Lock battery module, and Pelican hard case.',
+    specifications: [
+      { label: 'Sensor', value: '19.9 MP Super 35mm Global Shutter CMOS' },
+      { label: 'Framerates', value: '6K 80fps • 4K 120fps Global Shutter' },
+      { label: 'Security Deposit', value: '₹650 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Global shutter sync test & sensor dust check video',
+      customNotes: 'Include dual 1TB CFexpress Type B cards and Canon RF-to-EF adapter.'
+    },
+    suggested: true,
+    bestSeller: true
   }
 ];
 

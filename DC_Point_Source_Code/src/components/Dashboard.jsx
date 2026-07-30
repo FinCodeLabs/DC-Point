@@ -180,28 +180,45 @@ export default function Dashboard({
         ))}
       </div>
 
-      {/* SUPER ADMIN TAB 1: 5% Escrow Commission Revenue Ledger */}
+      {/* SUPER ADMIN TAB 1: 5% Escrow Commission Revenue & Product Inventory Ledger */}
       {dashTab === 'admin-commission' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-          {/* Revenue Breakdown Cards */}
-          <div className="grid-3">
+          {/* Platform Metric KPI Cards Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+            {/* Total Products Metric Card */}
+            <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%)', border: '1px solid #BFDBFE' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#1D4ED8', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
+                <ShoppingBag size={16} /> Total Products in Marketplace
+              </div>
+              <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#1E40AF', marginTop: '0.4rem' }}>
+                {allListings.length} Products
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.8rem', color: '#475569', marginTop: '0.4rem', fontWeight: '600' }}>
+                <span style={{ color: '#00ADB5' }}>🛒 Purchase: {allListings.filter(l => l.type === 'purchase').length}</span>
+                <span>•</span>
+                <span style={{ color: '#D97706' }}>🔄 Rent: {allListings.filter(l => l.type === 'rent').length}</span>
+              </div>
+            </div>
+
+            {/* Total Escrow Commission Revenue Card */}
             <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%)', border: '1px solid #A7F3D0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#047857', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
                 <DollarSign size={16} /> Total 5% Escrow Revenue Collected
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '800', color: '#047857', marginTop: '0.4rem' }}>
+              <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#047857', marginTop: '0.4rem' }}>
                 ₹{currentUser.walletBalance.toLocaleString()}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.3rem' }}>
-                Retained platform fees from completed trades
+                5% platform fee retained on settled trades
               </div>
             </div>
 
+            {/* Active Escrow Vault Reserve Card */}
             <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #F0FDFA 0%, #FFFFFF 100%)', border: '1px solid #99F6E4' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0D9488', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
                 <Lock size={16} /> Active Escrow Vault Reserve
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '800', color: '#0F766E', marginTop: '0.4rem' }}>
+              <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0F766E', marginTop: '0.4rem' }}>
                 ₹{activeEscrowVaultReserve.toFixed(2)}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.3rem' }}>
@@ -209,11 +226,12 @@ export default function Dashboard({
               </div>
             </div>
 
+            {/* Gross Merchandise Value (GMV) Card */}
             <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, #F3E8FF 0%, #FFFFFF 100%)', border: '1px solid #DDD6FE' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#7E22CE', fontSize: '0.8rem', fontWeight: '700', textTransform: 'uppercase' }}>
                 <TrendingUp size={16} /> Gross Merchandise Value (GMV)
               </div>
-              <div style={{ fontSize: '2rem', fontWeight: '800', color: '#6B21A8', marginTop: '0.4rem' }}>
+              <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#6B21A8', marginTop: '0.4rem' }}>
                 ₹{totalPlatformGMV.toFixed(2)}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.3rem' }}>
@@ -504,11 +522,29 @@ export default function Dashboard({
 
       {/* SELLER TAB 2: My Published Listings */}
       {dashTab === 'my-listings' && (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Header Bar with Action Button */}
+          <div className="card" style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: '#F8FAFC' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0B192C' }}>Published Seller Catalog ({myListings.length})</h3>
+              <p style={{ color: '#64748B', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+                All products & rental gear listed here are live and immediately visible to buyers across the platform.
+              </p>
+            </div>
+
+            <button className="btn-primary" onClick={onOpenCreateListing}>
+              <PlusCircle size={18} />
+              <span>List New Product / Rental</span>
+            </button>
+          </div>
+
           {myListings.length === 0 ? (
             <div className="card" style={{ padding: '3.5rem 2rem', textAlign: 'center' }}>
               <FileText size={44} style={{ color: '#CBD5E1', marginBottom: '0.75rem' }} />
               <h3 style={{ fontSize: '1.2rem', color: '#475569' }}>No listings created by {currentUser.name}</h3>
+              <button className="btn-primary" onClick={onOpenCreateListing} style={{ marginTop: '1rem' }}>
+                <PlusCircle size={16} /> Add Your First Product
+              </button>
             </div>
           ) : (
             <div className="grid-3">

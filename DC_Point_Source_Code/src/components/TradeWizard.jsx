@@ -26,8 +26,10 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
 
   const [activeStep, setActiveStep] = useState(trade.currentStep || 1);
 
-  // Check if current logged-in user is Super Admin
+  // Check role of current logged-in user
   const isSuperAdmin = currentUser.id === 'user_admin_1' || currentUser.role?.toLowerCase().includes('admin');
+  const isSeller = !isSuperAdmin && (currentUser.id === trade.sellerId || currentUser.id === 'user_seller_1' || currentUser.role?.toLowerCase().includes('seller'));
+  const isBuyer = !isSuperAdmin && !isSeller;
 
   // Calculate exact financials based on item type
   const isRental = trade.type === 'rent';
@@ -192,6 +194,8 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   const handleCompleteDeliveryChecklist = () => {
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
+    const payoutAmount = isRental ? rentalSubtotal : basePrice;
+
     // Transfer payout to Seller, refund deposit to Buyer if rental, and credit 5% Escrow Fee to Super Admin
     if (onUpdateWalletBalance && !trade.isPaymentReleased) {
       if (isRental) {
@@ -207,6 +211,21 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
       onUpdateWalletBalance('user_admin_1', escrowFee, `5% Platform Escrow Commission Retained from ${trade.title}`);
     }
 
+    // DISPATCH SELLER NOTIFICATION THAT PAYMENT IS RELEASED & CREDITED
+    if (onAddNotification) {
+      onAddNotification({
+        id: `notif-${Date.now()}`,
+        recipientId: trade.sellerId,
+        tradeId: trade.id,
+        title: '💰 Escrow Payment Released & Wallet Credited!',
+        message: `${currentUser.name} (Buyer) approved delivery & quality inspection. ₹${payoutAmount.toFixed(2)} has been credited to your wallet!`,
+        timestamp: 'Just now',
+        isRead: false,
+        type: 'payment_release',
+        senderName: currentUser.name
+      });
+    }
+
     setActiveStep(6);
     onUpdateTrade({
       ...trade,
@@ -214,7 +233,24 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
       isPaymentReleased: true,
       status: 'Trade Completed & Escrow Released'
     });
-    if (showToast) showToast(`🎉 Escrow Released! ₹${(isRental ? rentalSubtotal : basePrice).toFixed(2)} credited to ${trade.sellerName}'s wallet.`);
+    if (showToast) showToast(`🎉 Payment Made! ₹${payoutAmount.toFixed(2)} transferred to ${trade.sellerName}'s wallet & seller notified.`);
+  };
+
+  const handleSellerNotifyCustomer = () => {
+    if (onAddNotification) {
+      onAddNotification({
+        id: `notif-${Date.now()}`,
+        recipientId: trade.buyerId,
+        tradeId: trade.id,
+        title: '📦 Product Dispatched & Ready for Delivery Inspection',
+        message: `${currentUser.name} (Seller) updated tracking proof & dispatched "${trade.title}". Please inspect delivery and approve payment release.`,
+        timestamp: 'Just now',
+        isRead: false,
+        type: 'delivery_update',
+        senderName: currentUser.name
+      });
+    }
+    if (showToast) showToast(`📢 Notification sent to Customer (${trade.buyerName})! Awaiting buyer inspection & escrow payment release approval.`);
   };
 
   const stepsList = [
@@ -516,6 +552,11 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                   <ShieldCheck size={18} color="#8B5CF6" />
                   <span>Super Admin Read-Only Mode: Escrow deposit is strictly authorized by Buyer ({trade.buyerName}).</span>
                 </div>
+              ) : isSeller ? (
+                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '0.85rem 1.5rem', borderRadius: '10px', color: '#047857', fontSize: '0.85rem', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Lock size={18} color="#10B981" />
+                  <span>🔒 Awaiting Buyer Escrow Deposit (₹{totalEscrowRequired.toFixed(2)} required from {trade.buyerName})</span>
+                </div>
               ) : (
                 <button className="btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.05rem' }} onClick={handleDepositEscrow}>
                   <Lock size={18} />
@@ -647,15 +688,19 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
           {activeStep === 6 && (
             <div>
               <div style={{ marginBottom: '1.25rem' }}>
-                <h4 style={{ fontSize: '1.15rem', fontWeight: '800' }}>Step 6 — Delivery Verification & Escrow Release</h4>
+                <h4 style={{ fontSize: '1.15rem', fontWeight: '800' }}>
+                  {isSeller ? 'Step 6 — Product Dispatch & Delivery Update to Customer' : 'Step 6 — Delivery Verification & Escrow Release'}
+                </h4>
                 <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                  Verify packaging, tracking, and unboxing proof to trigger instant payment release to the seller.
+                  {isSeller 
+                    ? `Notify customer (${trade.buyerName}) about product dispatch, tracking details, and delivery status.`
+                    : 'Verify packaging, tracking, and unboxing proof to trigger instant payment release to the seller.'}
                 </p>
               </div>
 
               <div className="grid-2">
                 <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px' }}>
-                  <h5 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.85rem' }}>Delivery Checklist</h5>
+                  <h5 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.85rem' }}>Delivery Checklist & Tracking</h5>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
@@ -677,7 +722,10 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
 
                 <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <h5 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>Release Escrow Payment</h5>
+                    <h5 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>
+                      {isSeller ? 'Product Dispatch Notification' : 'Release Escrow Payment'}
+                    </h5>
+
                     <div style={{ background: '#ECFDF5', padding: '0.75rem', borderRadius: '8px', border: '1px solid #A7F3D0', margin: '0.75rem 0', fontSize: '0.8rem', textAlign: 'left' }}>
                       <div style={{ color: '#047857', fontWeight: '700' }}>💸 Payout Allocation:</div>
                       <div>• Transfer to Seller ({trade.sellerName}): <strong>₹{rentalSubtotal.toFixed(2)}</strong></div>
@@ -686,7 +734,20 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                     </div>
                   </div>
 
-                  {isSuperAdmin ? (
+                  {trade.isPaymentReleased ? (
+                    <div style={{ background: '#ECFDF5', border: '1px solid #10B981', padding: '1rem', borderRadius: '10px', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#047857', fontWeight: '800', fontSize: '1rem', marginBottom: '0.35rem' }}>
+                        <CheckCircle2 size={20} color="#10B981" />
+                        <span>🎉 Payment Made & Escrow Released</span>
+                      </div>
+                      <p style={{ fontSize: '0.825rem', color: '#065F46', margin: '0.2rem 0 0.6rem 0', lineHeight: '1.4' }}>
+                        Payment of <strong>₹{(isRental ? rentalSubtotal : basePrice).toFixed(2)}</strong> has been transferred to Seller ({trade.sellerName}) wallet.
+                      </p>
+                      <div style={{ fontSize: '0.78rem', background: '#FFFFFF', padding: '0.45rem 0.65rem', borderRadius: '6px', color: '#047857', border: '1px solid #A7F3D0', fontWeight: '600' }}>
+                        🔔 Seller ({trade.sellerName}) has been notified of the payout!
+                      </div>
+                    </div>
+                  ) : isSuperAdmin ? (
                     <div style={{ background: '#F3E8FF', border: '1px solid #C084FC', padding: '1rem', borderRadius: '10px', textAlign: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#6B21A8', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
                         <ShieldCheck size={16} color="#8B5CF6" />
@@ -695,6 +756,16 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       <p style={{ fontSize: '0.78rem', color: '#581C87', margin: 0, lineHeight: '1.4' }}>
                         Admins cannot access customer funds or trigger payment release. Payment release is strictly controlled by Buyer ({trade.buyerName}) upon inspection.
                       </p>
+                    </div>
+                  ) : isSeller ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <button className="btn-primary" style={{ padding: '0.85rem', width: '100%' }} onClick={handleSellerNotifyCustomer}>
+                        <Send size={18} />
+                        <span>Notify Customer / Send Delivery Update to Buyer</span>
+                      </button>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                        🔒 Payment held in escrow vault. Released to your wallet after buyer ({trade.buyerName}) approves unboxing inspection.
+                      </div>
                     </div>
                   ) : (
                     <button className="btn-primary" style={{ padding: '0.85rem', width: '100%' }} onClick={handleCompleteDeliveryChecklist}>

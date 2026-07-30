@@ -186,14 +186,17 @@ export default function Header({
 
           {/* Direct CTA Actions, Notifications Bell & Hamburger Menu Button */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative' }}>
-            <button 
-              className="btn-primary btn-sm"
-              onClick={onOpenCreateListing}
-              title="List an item or rental service"
-            >
-              <PlusCircle size={16} />
-              <span>List Item / Rental</span>
-            </button>
+            {/* List Item option strictly available for Seller role */}
+            {(currentUser?.id === 'user_seller_1' || currentUser?.role?.toLowerCase().includes('seller')) && (
+              <button 
+                className="btn-primary btn-sm"
+                onClick={onOpenCreateListing}
+                title="List an item or rental service"
+              >
+                <PlusCircle size={16} />
+                <span>List Item / Rental</span>
+              </button>
+            )}
 
             {/* Dashboard Shortcut */}
             <button 
