@@ -4,6 +4,10 @@ import neonSignImg from '../assets/neon_sign.jpg';
 import pcbBoardImg from '../assets/pcb_board.jpg';
 import honeyJarImg from '../assets/honey_jar.jpg';
 import cinemaCameraImg from '../assets/cinema_camera.jpg';
+import djSystemImg from '../assets/dj_system.png';
+import droneRigImg from '../assets/drone_rig.png';
+import audioPackImg from '../assets/audio_pack.png';
+import lightingKitImg from '../assets/lighting_kit.png';
 
 export const FALLBACK_IMAGES = {
   leatherBag: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%231E293B"/><rect x="150" y="120" width="300" height="200" rx="16" fill="%23854D0E" stroke="%23CA8A04" stroke-width="4"/><path d="M 200 120 L 200 80 Q 300 50 400 80 L 400 120" fill="none" stroke="%23CA8A04" stroke-width="6"/><rect x="270" y="200" width="60" height="40" rx="6" fill="%23EAB308"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%2394A3B8" text-anchor="middle">Full-Grain Leather Bag</text></svg>',
@@ -212,7 +216,7 @@ export const INITIAL_RENT_LISTINGS = [
     specifications: [
       { label: 'Resolution', value: '4K 120fps 10-bit 4:2:2' },
       { label: 'Included Extras', value: '2x 160GB CFexpress Type A Cards, Atomos Monitor' },
-      { label: 'Security Deposit', value: '$300 (Held in DC Point Escrow)' }
+      { label: 'Security Deposit', value: '₹300 (Held in DC Point Escrow)' }
     ],
     sampleAgreementTerms: {
       deliveryWindowDays: 1,
@@ -225,7 +229,7 @@ export const INITIAL_RENT_LISTINGS = [
   },
   {
     id: 'rent-002',
-    title: 'Pioneer DJ System (2x CDJ-3000 + DJM-A9 Mixer + Case)',
+    title: 'Pioneer DJ System (2x CDJ-3000 + DJM-A9 Mixer + Flight Case)',
     category: 'Rentals',
     type: 'rent',
     price: 195,
@@ -237,12 +241,12 @@ export const INITIAL_RENT_LISTINGS = [
     sellerCompletedTrades: 41,
     complianceStatus: 'Verified',
     complianceBadgeText: 'Sound Tech Inspected',
-    image: cinemaCameraImg,
+    image: djSystemImg,
     description: 'Flagship club standard DJ setup in heavy flight cases. Ready for festivals, corporate events, and wedding performances.',
     specifications: [
       { label: 'Condition', value: 'Pristine Studio Condition' },
       { label: 'Cables Included', value: 'Pro Link LAN, XLR Master, Powercon' },
-      { label: 'Deposit', value: '$400 Refundable Escrow Hold' }
+      { label: 'Security Deposit', value: '₹400 (Held in DC Point Escrow)' }
     ],
     sampleAgreementTerms: {
       deliveryWindowDays: 1,
@@ -252,6 +256,96 @@ export const INITIAL_RENT_LISTINGS = [
     },
     suggested: true,
     bestSeller: false
+  },
+  {
+    id: 'rent-003',
+    title: 'Inspire 3 Cinema 8K Quadcopter Drone Rig & Master Wheels',
+    category: 'Rentals',
+    type: 'rent',
+    price: 260,
+    unit: 'per day',
+    rentalDeposit: 600,
+    sellerId: 'seller_aerial_fx',
+    sellerName: 'AerialVision FX',
+    sellerRating: 4.97,
+    sellerCompletedTrades: 58,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'FAA Certified & FAA Insured',
+    image: droneRigImg,
+    description: 'Full frame 8K ProRes RAW cinema drone kit with Zenmuse X9-8K Air camera, 18mm/24mm/35mm/50mm prime lenses, 6 TB TB51 batteries and dual RC PRO controllers.',
+    specifications: [
+      { label: 'Camera', value: '8K Full Frame RAW / 75fps' },
+      { label: 'Max Speed', value: '94 km/h Night Vision obstacle sensing' },
+      { label: 'Security Deposit', value: '₹600 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Pre-flight propeller & gimbal calibration video certificate',
+      customNotes: 'Include dual RC PRO controllers for pilot & camera operator.'
+    },
+    suggested: true,
+    bestSeller: true
+  },
+  {
+    id: 'rent-004',
+    title: 'Sennheiser EW-DX Wireless Lavalier & Field Recorder Package',
+    category: 'Rentals',
+    type: 'rent',
+    price: 95,
+    unit: 'per day',
+    rentalDeposit: 200,
+    sellerId: 'seller_sound_studio',
+    sellerName: 'Sonic Studio Gear',
+    sellerRating: 4.94,
+    sellerCompletedTrades: 33,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Frequency Scan Calibrated',
+    image: audioPackImg,
+    description: 'Dual channel digital wireless microphone system with MKE 2 omni lavaliers, Sound Devices MixPre-6 II 32-bit float audio recorder, and Orca audio bag.',
+    specifications: [
+      { label: 'Audio Quality', value: '32-Bit Float / 96kHz Recording' },
+      { label: 'Wireless Specs', value: '134 dB Dynamic Range • 1.9 ms latency' },
+      { label: 'Security Deposit', value: '₹200 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 6,
+      qualityStandard: 'Frequency scan report & capsule test audio sample',
+      customNotes: 'Include 64GB SanDisk Extreme SD card and spare rechargeable BA 70 batteries.'
+    },
+    suggested: false,
+    bestSeller: false
+  },
+  {
+    id: 'rent-005',
+    title: 'Aputure 600d Pro Daylight LED Cinema Studio Lighting Package',
+    category: 'Rentals',
+    type: 'rent',
+    price: 125,
+    unit: 'per day',
+    rentalDeposit: 250,
+    sellerId: 'seller_cinelight',
+    sellerName: 'CineLight Pro Rentals',
+    sellerRating: 4.95,
+    sellerCompletedTrades: 47,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'UL Safety Inspected',
+    image: lightingKitImg,
+    description: 'High output 600W daylight-balanced COB LED light fixture with Light Dome 150 softbox, Fresnel 2X modifier, rolling flight case, and heavy-duty C-stands.',
+    specifications: [
+      { label: 'Output', value: '98,500+ lux @ 3m with F10 Fresnel' },
+      { label: 'Color Index', value: 'CRI 96+ / TLCI 96+' },
+      { label: 'Security Deposit', value: '₹250 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Burn-in power test video & optical reflector check',
+      customNotes: 'Include Sidus Link Bluetooth controller & rolling hard case.'
+    },
+    suggested: false,
+    bestSeller: true
   }
 ];
 
