@@ -7,7 +7,7 @@ export const INITIAL_USER_PERSONAS = [
     role: 'Buyer Focus',
     email: 'alex.mercer@trade-tech.io',
     phone: '+1 (555) 234-8901',
-    walletBalance: 4500,
+    walletBalance: 4315, // Updated from 4500 after locking ₹185 in Escrow for Trade #trade-101
     trustScore: 98,
     verifiedStatus: 'Fully Verified (ID + Bank Linked)',
     completedTrades: 14,
@@ -29,6 +29,21 @@ export const INITIAL_USER_PERSONAS = [
     rating: 4.96,
     reviewsCount: 36,
     joinDate: 'Nov 2024'
+  },
+  {
+    id: 'user_admin_1',
+    name: 'Platform Super Admin',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    role: 'Super Admin (Platform Owner)',
+    email: 'admin@dcpoint.io',
+    phone: '+1 (555) 000-8888',
+    walletBalance: 1458.50, // Cumulative 5% Escrow Fee Platform Revenue
+    trustScore: 100,
+    verifiedStatus: 'System Master Governance Account',
+    completedTrades: 152,
+    rating: 5.0,
+    reviewsCount: 152,
+    joinDate: 'Jan 2024'
   }
 ];
 
@@ -218,6 +233,20 @@ export const INITIAL_RENT_LISTINGS = [
   }
 ];
 
+export const INITIAL_NOTIFICATIONS = [
+  {
+    id: 'notif-1',
+    recipientId: 'user_buyer_1',
+    tradeId: 'trade-101',
+    title: '🎨 Seller Work Update Posted',
+    message: 'Maya Lin posted work-in-progress proof: "Leather cutting and initial stitching completed! Hand-embossed initials A.M."',
+    timestamp: '2026-07-29 10:15 AM',
+    isRead: false,
+    type: 'progress_update',
+    senderName: 'Maya Lin (Seller)'
+  }
+];
+
 export const MOCK_ACTIVE_TRADES = [
   {
     id: 'trade-101',
@@ -232,11 +261,11 @@ export const MOCK_ACTIVE_TRADES = [
     sellerName: 'Maya Lin (CraftedStudio)',
     currentStep: 4, // Step 4: Progress Updates & Timer
     type: 'purchase',
-    status: 'In Progress (Awaiting Buyer Progress Approval)',
+    status: 'In Progress (Seller Working • Awaiting Buyer Checkpoint)',
     createdAt: '2026-07-28',
     agreementDetails: {
       deliveryTimeframeDays: 5,
-      paymentTerms: 'Full Escrow Pre-funding ($194.25 Locked)',
+      paymentTerms: 'Full Escrow Pre-funding (₹194.25 Locked)',
       qualityInspectionTerms: '48-hour post-delivery unpacking verification window',
       agreementDurationDays: 14,
       customPackagingNotes: 'Please emboss initials "A.M." on the inside flap and use eco-cardboard box.',
@@ -269,21 +298,21 @@ export const MOCK_ACTIVE_TRADES = [
     listingId: 'rent-001',
     title: 'Cinema 4K FX3 Video Production Rig & Lens Package',
     price: 140,
+    rentalDurationDays: 3,
     rentalDeposit: 300,
-    escrowFee: 7.00,
-    totalEscrowAmount: 447.00,
+    escrowFee: 21.00, // 5% of (140 * 3 = 420)
+    totalEscrowAmount: 741.00, // (140 * 3) + 300 + 21 = 741.00
     buyerId: 'user_buyer_1',
     buyerName: 'Alex Mercer',
-    sellerId: 'seller_cine_rentals',
-    sellerName: 'FrameRate Cine Equipment',
+    sellerId: 'user_seller_1', // Assign to Maya Lin so seller login can interact with it
+    sellerName: 'Maya Lin (CraftedStudio)',
     currentStep: 2, // Step 2: Agreement Builder
     type: 'rent',
-    rentalDurationDays: 3,
     status: 'Agreement Builder (Pending Final Signature)',
     createdAt: '2026-07-29',
     agreementDetails: {
       deliveryTimeframeDays: 1,
-      paymentTerms: 'Daily Rental Rate + Refundable Deposit held in Escrow',
+      paymentTerms: 'Daily Rental Rate (3 Days: ₹420) + Refundable Deposit (₹300) held in Escrow',
       qualityInspectionTerms: '12-hour camera sensor & lens calibration check',
       agreementDurationDays: 5,
       customPackagingNotes: 'Include extra Atomos HDMI cable and Pelican hard case.',

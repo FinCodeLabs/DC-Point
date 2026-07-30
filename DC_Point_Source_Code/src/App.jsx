@@ -15,7 +15,8 @@ import {
   INITIAL_USER_PERSONAS, 
   INITIAL_PURCHASE_LISTINGS, 
   INITIAL_RENT_LISTINGS, 
-  MOCK_ACTIVE_TRADES 
+  MOCK_ACTIVE_TRADES,
+  INITIAL_NOTIFICATIONS
 } from './data/mockData';
 
 export default function App() {
@@ -24,8 +25,11 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'marketplace' | 'dashboard'
 
   // User Personas & Active Session
-  const [allUsers] = useState(INITIAL_USER_PERSONAS);
+  const [allUsers, setAllUsers] = useState(INITIAL_USER_PERSONAS);
   const [currentUser, setCurrentUser] = useState(INITIAL_USER_PERSONAS[0]); // Alex Mercer by default
+
+  // Notifications State
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
 
   // Marketplace & Trade States
   const [listings, setListings] = useState([...INITIAL_PURCHASE_LISTINGS, ...INITIAL_RENT_LISTINGS]);
@@ -46,15 +50,54 @@ export default function App() {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3200);
+    }, 3500);
   };
 
-  // Persona Switch Handler
+  // Real-time Wallet Balance Handler
+  const handleUpdateWalletBalance = (userId, amountChange, reason) => {
+    setAllUsers(prevUsers => prevUsers.map(u => {
+      if (u.id === userId) {
+        return { ...u, walletBalance: Math.max(0, u.walletBalance + amountChange) };
+      }
+      return u;
+    }));
+
+    setCurrentUser(prev => {
+      if (prev.id === userId) {
+        return { ...prev, walletBalance: Math.max(0, prev.walletBalance + amountChange) };
+      }
+      return prev;
+    });
+
+    if (reason) {
+      const isDebit = amountChange < 0;
+      showToast(`${isDebit ? '💸 Escrow Vault Deduction' : '💰 Escrow Payout Received'}: ${isDebit ? '-' : '+'}₹${Math.abs(amountChange).toFixed(2)} (${reason})`);
+    }
+  };
+
+  // Add real-time notification
+  const handleAddNotification = (newNotif) => {
+    setNotifications(prev => [newNotif, ...prev]);
+    showToast(`🔔 Buyer Notification: ${newNotif.title}`);
+  };
+
+  const handleMarkNotificationRead = (notifId) => {
+    setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, isRead: true } : n));
+  };
+
+  const handleOpenTradeFromNotification = (tradeId) => {
+    const found = activeTrades.find(t => t.id === tradeId);
+    if (found) {
+      setActiveTradeForWizard(found);
+    }
+  };
+
+  // Persona / Role Switch Handler
   const handleSwitchUser = (userId) => {
     const found = allUsers.find(u => u.id === userId);
     if (found) {
       setCurrentUser(found);
-      showToast(`Switched persona to ${found.name} (${found.role.split(' ')[0]})`);
+      showToast(`Switched active portal to ${found.name} (${found.role.split(' ')[0]})`);
     }
   };
 
@@ -130,7 +173,7 @@ export default function App() {
     setIsCreateListingOpen(false);
     setActiveMarket(newListing.type);
     setCurrentTab('marketplace');
-    showToast(`Published "${newListing.title.slice(0, 24)}..." to marketplace!`);
+    showToast(`Published "${newListing.title.slice(0, 24)}..." to marketplace as Seller!`);
   };
 
   return (
@@ -158,6 +201,9 @@ export default function App() {
         onOpenCreateListing={() => setIsCreateListingOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         activeTradeCount={activeTrades.length}
+        notifications={notifications}
+        onMarkNotificationRead={handleMarkNotificationRead}
+        onOpenTradeFromNotification={handleOpenTradeFromNotification}
         showToast={showToast}
       />
 
@@ -224,6 +270,8 @@ export default function App() {
           trade={activeTradeForWizard}
           currentUser={currentUser}
           onUpdateTrade={handleUpdateTrade}
+          onAddNotification={handleAddNotification}
+          onUpdateWalletBalance={handleUpdateWalletBalance}
           onOpenDispute={(trade) => setTradeForDispute(trade)}
           onClose={() => setActiveTradeForWizard(null)}
           showToast={showToast}
@@ -254,9 +302,13 @@ export default function App() {
       {isAuthModalOpen && (
         <AuthModal
           onClose={() => setIsAuthModalOpen(false)}
-          onLoginSuccess={() => {
+          onLoginSuccess={(targetUserId) => {
             setIsAuthModalOpen(false);
-            showToast('Authenticated as Alex Mercer!');
+            const userToLogin = targetUserId ? allUsers.find(u => u.id === targetUserId) : allUsers[0];
+            if (userToLogin) {
+              setCurrentUser(userToLogin);
+              showToast(`Logged in successfully as ${userToLogin.name} (${userToLogin.role.split(' ')[0]})`);
+            }
           }}
         />
       )}

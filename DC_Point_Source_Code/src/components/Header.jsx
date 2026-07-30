@@ -12,7 +12,11 @@ import {
   Sparkles,
   Zap,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Bell,
+  Check,
+  UserCheck,
+  LogIn
 } from 'lucide-react';
 
 export default function Header({ 
@@ -26,9 +30,13 @@ export default function Header({
   onOpenCreateListing, 
   onOpenAuthModal, 
   activeTradeCount,
+  notifications = [],
+  onMarkNotificationRead,
+  onOpenTradeFromNotification,
   showToast
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   const handleSelectNav = (tab) => {
     setCurrentTab(tab);
@@ -40,19 +48,96 @@ export default function Header({
     if (showToast) showToast('🚀 Upgrade Successful! You are now on DC Point Pro (0% Escrow Fees & Priority Mediation)');
   };
 
+  // Filter notifications for current user
+  const userNotifs = notifications.filter(n => n.recipientId === currentUser.id);
+  const unreadNotifsCount = userNotifs.filter(n => !n.isRead).length;
+
   return (
     <header className="app-header">
-      {/* Top Escrow Bar */}
+      {/* Top Escrow & Login Role Bar */}
       <div className="persona-bar">
-        <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: '600' }}>
-            <ShieldCheck size={14} /> 100% Escrow Vault Protected
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: '600', fontSize: '0.8rem' }}>
+              <ShieldCheck size={14} /> 100% Escrow Vault Protected
+            </div>
+
+            {/* Active Persona Banner */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.15rem 0.6rem',
+              borderRadius: '9999px',
+              background: currentUser.id === 'user_admin_1' 
+                ? 'rgba(139, 92, 246, 0.25)' 
+                : currentUser.id === 'user_seller_1' 
+                  ? 'rgba(16, 185, 129, 0.2)' 
+                  : 'rgba(0, 173, 181, 0.2)',
+              border: `1px solid ${
+                currentUser.id === 'user_admin_1' 
+                  ? '#8B5CF6' 
+                  : currentUser.id === 'user_seller_1' 
+                    ? '#10B981' 
+                    : '#00ADB5'
+              }`,
+              color: '#FFFFFF',
+              fontSize: '0.75rem',
+              fontWeight: '700'
+            }}>
+              <span>
+                {currentUser.id === 'user_admin_1' 
+                  ? '👑 Logged in as SUPER ADMIN:' 
+                  : currentUser.id === 'user_seller_1' 
+                    ? '🎨 Logged in as SELLER:' 
+                    : '🛒 Logged in as BUYER:'}
+              </span>
+              <strong style={{ 
+                color: currentUser.id === 'user_admin_1' 
+                  ? '#A78BFA' 
+                  : currentUser.id === 'user_seller_1' 
+                    ? '#10B981' 
+                    : '#00ADB5' 
+              }}>
+                {currentUser.name}
+              </strong>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', color: '#94A3B8' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: '#00ADB5' }}>
-              <Wallet size={14} /> Escrow Vault Balance: <strong>₹{currentUser.walletBalance.toLocaleString()}</strong>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: '#94A3B8', fontSize: '0.8rem' }}>
+            <span style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '0.3rem', 
+              color: currentUser.id === 'user_admin_1' ? '#A78BFA' : '#00ADB5',
+              fontWeight: '600'
+            }}>
+              <Wallet size={14} /> 
+              {currentUser.id === 'user_admin_1' ? 'Platform Fee Revenue:' : 'Escrow Wallet:'} 
+              <strong style={{ color: currentUser.id === 'user_admin_1' ? '#10B981' : '#FFFFFF' }}>
+                ₹{currentUser.walletBalance.toLocaleString()}
+              </strong>
             </span>
+
+            {/* Switch Login Role Shortcut */}
+            <button
+              onClick={onOpenAuthModal}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                borderRadius: '6px',
+                padding: '0.2rem 0.5rem',
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem'
+              }}
+            >
+              <LogIn size={12} />
+              <span>Switch Login</span>
+            </button>
           </div>
         </div>
       </div>
@@ -99,7 +184,7 @@ export default function Header({
             </button>
           </div>
 
-          {/* Direct CTA Actions & Hamburger Menu Button */}
+          {/* Direct CTA Actions, Notifications Bell & Hamburger Menu Button */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative' }}>
             <button 
               className="btn-primary btn-sm"
@@ -124,6 +209,111 @@ export default function Header({
                 </span>
               )}
             </button>
+
+            {/* REAL-TIME NOTIFICATION BELL */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setIsNotifOpen(!isNotifOpen)}
+                style={{
+                  background: isNotifOpen ? '#00ADB5' : 'rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '0.5rem',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'all 0.2s'
+                }}
+                title="Buyer Notifications for Seller Work Updates"
+              >
+                <Bell size={20} />
+                {unreadNotifsCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    background: '#EF4444',
+                    color: '#FFF',
+                    fontSize: '0.65rem',
+                    fontWeight: '800',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #0B192C'
+                  }}>
+                    {unreadNotifsCount}
+                  </span>
+                )}
+              </button>
+
+              {/* NOTIFICATION DROPDOWN DRAWER */}
+              {isNotifOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 12px)',
+                  right: '0',
+                  width: '350px',
+                  background: '#0B192C',
+                  border: '1px solid rgba(0, 173, 181, 0.5)',
+                  borderRadius: '16px',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                  padding: '1rem',
+                  zIndex: 1050,
+                  animation: 'slideUp 0.2s ease'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '800', fontSize: '0.85rem' }}>
+                      <Bell size={16} /> Buyer Notifications ({userNotifs.length})
+                    </div>
+                    {unreadNotifsCount > 0 && (
+                      <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>{unreadNotifsCount} Unread</span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '280px', overflowY: 'auto' }}>
+                    {userNotifs.length > 0 ? (
+                      userNotifs.map(n => (
+                        <div
+                          key={n.id}
+                          onClick={() => {
+                            if (onMarkNotificationRead) onMarkNotificationRead(n.id);
+                            if (onOpenTradeFromNotification) onOpenTradeFromNotification(n.tradeId);
+                            setIsNotifOpen(false);
+                          }}
+                          style={{
+                            padding: '0.65rem 0.75rem',
+                            borderRadius: '8px',
+                            background: n.isRead ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 173, 181, 0.15)',
+                            border: '1px solid',
+                            borderColor: n.isRead ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 173, 181, 0.4)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF' }}>{n.title}</span>
+                            <span style={{ fontSize: '0.65rem', color: '#94A3B8' }}>{n.timestamp}</span>
+                          </div>
+                          <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0, lineHeight: '1.3' }}>
+                            {n.message}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#94A3B8', textAlign: 'center', padding: '1.5rem 0' }}>
+                        No notifications yet. Updates on seller work will appear here!
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Hamburger Button (Top Right) */}
             <button 

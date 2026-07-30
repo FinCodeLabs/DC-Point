@@ -157,6 +157,10 @@ button:active {
   color: var(--crimson-danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 .btn-danger:hover {
   background: var(--crimson-danger);

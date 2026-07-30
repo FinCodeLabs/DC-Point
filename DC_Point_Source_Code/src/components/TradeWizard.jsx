@@ -20,10 +20,22 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenDispute, onClose, showToast }) {
+export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenDispute, onClose, onAddNotification, onUpdateWalletBalance, showToast }) {
   if (!trade) return null;
 
   const [activeStep, setActiveStep] = useState(trade.currentStep || 1);
+
+  // Check if current logged-in user is Super Admin
+  const isSuperAdmin = currentUser.id === 'user_admin_1' || currentUser.role?.toLowerCase().includes('admin');
+
+  // Calculate exact financials based on item type
+  const isRental = trade.type === 'rent';
+  const rentalDays = trade.rentalDurationDays || 3;
+  const basePrice = trade.price || 0;
+  const rentalSubtotal = isRental ? basePrice * rentalDays : basePrice;
+  const securityDeposit = isRental ? (trade.rentalDeposit || 300) : 0;
+  const escrowFee = rentalSubtotal * 0.05;
+  const totalEscrowRequired = rentalSubtotal + securityDeposit + escrowFee;
 
   // Dynamically initialize chat messages based on product details
   const [chatMessages, setChatMessages] = useState(() => {
@@ -46,7 +58,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   // Agreement Form State
   const [agreementForm, setAgreementForm] = useState({
     deliveryTimeframeDays: trade.agreementDetails?.deliveryTimeframeDays || 5,
-    paymentTerms: trade.agreementDetails?.paymentTerms || '100% Escrow Vault Lock',
+    paymentTerms: trade.agreementDetails?.paymentTerms || (isRental ? `Daily Rate (${rentalDays} Days) + Refundable Deposit` : '100% Escrow Vault Lock'),
     qualityInspectionTerms: trade.agreementDetails?.qualityInspectionTerms || '48-hour unpacking inspection window',
     agreementDurationDays: trade.agreementDetails?.agreementDurationDays || 14,
     customPackagingNotes: trade.agreementDetails?.customPackagingNotes || 'Reinforced protective packaging required.',
@@ -94,7 +106,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
     if (!newUpdateText.trim()) return;
     const newUpdate = {
       id: `up-${Date.now()}`,
-      sender: currentUser.name,
+      sender: `${currentUser.name} (${currentUser.id === trade.sellerId ? 'Seller' : 'Buyer'})`,
       timestamp: 'Just now',
       text: newUpdateText,
       image: trade.image || (trade.type === 'rent' ? '/cinema_camera.jpg' : '/pcb_board.jpg')
@@ -105,8 +117,24 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
       ...trade,
       progressUpdates: updatedUpdates
     });
+
+    // DISPATCH BUYER NOTIFICATION IF SELLER POSTS UPDATE
+    if (onAddNotification && currentUser.id === trade.sellerId) {
+      onAddNotification({
+        id: `notif-${Date.now()}`,
+        recipientId: trade.buyerId,
+        tradeId: trade.id,
+        title: '🎨 Seller Work Update Posted',
+        message: `${currentUser.name} posted progress proof on "${trade.title}": "${newUpdateText}"`,
+        timestamp: 'Just now',
+        isRead: false,
+        type: 'progress_update',
+        senderName: currentUser.name
+      });
+    }
+
     setNewUpdateText('');
-    if (showToast) showToast('Progress update & photo proof posted!');
+    if (showToast) showToast('Progress update & photo proof posted! Notification sent to Buyer.');
   };
 
   const handleSignAgreement = (role) => {
@@ -132,14 +160,22 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   };
 
   const handleDepositEscrow = () => {
+    const requiredAmount = totalEscrowRequired || trade.totalEscrowAmount || (trade.price * 1.05);
+
+    // Deduct total escrow deposit from Buyer's wallet
+    if (onUpdateWalletBalance && !trade.isEscrowPaid) {
+      onUpdateWalletBalance(trade.buyerId, -requiredAmount, `Escrow Deposit Lock for ${trade.title}`);
+    }
+
     setActiveStep(4);
     onUpdateTrade({
       ...trade,
       currentStep: 4,
+      isEscrowPaid: true,
       status: 'Escrow Locked — In Production & Progress Tracking',
       timer: { expiresInSeconds: 86400, warningText: 'Buyer must respond to progress update within 24h' }
     });
-    if (showToast) showToast(`🎉 ₹${(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)} locked securely in DC Point Escrow Vault!`);
+    if (showToast) showToast(`🎉 ₹${requiredAmount.toFixed(2)} deducted & locked in DC Point Escrow Vault!`);
   };
 
   const handleApproveProgress = () => {
@@ -153,24 +189,40 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   };
 
   const handleCompleteDeliveryChecklist = () => {
-    // Release payment!
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+    // Transfer payout to Seller, refund deposit to Buyer if rental, and credit 5% Escrow Fee to Super Admin
+    if (onUpdateWalletBalance && !trade.isPaymentReleased) {
+      if (isRental) {
+        onUpdateWalletBalance(trade.sellerId, rentalSubtotal, `Rental Earnings Payout for ${trade.title}`);
+        if (securityDeposit > 0) {
+          onUpdateWalletBalance(trade.buyerId, securityDeposit, `Refundable Security Deposit Returned for ${trade.title}`);
+        }
+      } else {
+        onUpdateWalletBalance(trade.sellerId, basePrice, `Escrow Payout Received for ${trade.title}`);
+      }
+
+      // Platform Retains 5% Escrow Commission Fee
+      onUpdateWalletBalance('user_admin_1', escrowFee, `5% Platform Escrow Commission Retained from ${trade.title}`);
+    }
+
     setActiveStep(6);
     onUpdateTrade({
       ...trade,
       currentStep: 6,
+      isPaymentReleased: true,
       status: 'Trade Completed & Escrow Released'
     });
-    if (showToast) showToast('🎉 Escrow Released! Funds transferred to Seller.');
+    if (showToast) showToast(`🎉 Escrow Released! ₹${(isRental ? rentalSubtotal : basePrice).toFixed(2)} credited to ${trade.sellerName}'s wallet.`);
   };
 
   const stepsList = [
-    { num: 1, label: '1. Chat & Terms' },
-    { num: 2, label: '2. Agreement Builder' },
-    { num: 3, label: '3. Escrow Deposit' },
-    { num: 4, label: '4. Progress & Timer' },
-    { num: 5, label: '5. Pre-Delivery Check' },
-    { num: 6, label: '6. Delivery & Release' }
+    { num: 1, label: 'Chat & Terms' },
+    { num: 2, label: 'Agreement Builder' },
+    { num: 3, label: 'Escrow Deposit' },
+    { num: 4, label: 'Progress & Timer' },
+    { num: 5, label: 'Pre-Delivery Check' },
+    { num: 6, label: 'Delivery & Release' }
   ];
 
   return (
@@ -186,15 +238,20 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
             <h3 style={{ fontSize: '1.2rem', color: '#FFFFFF', fontWeight: '800' }}>{trade.title}</h3>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button 
               className="btn-danger btn-sm"
+              style={{ padding: '0.45rem 0.95rem', gap: '0.55rem', display: 'inline-flex', alignItems: 'center' }}
               onClick={() => onOpenDispute(trade)}
             >
-              <AlertTriangle size={14} />
+              <AlertTriangle size={15} />
               <span>Raise Grievance / Dispute</span>
             </button>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}>
+            <button 
+              onClick={onClose} 
+              style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}
+              title="Close"
+            >
               <X size={22} />
             </button>
           </div>
@@ -213,7 +270,7 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
+                  gap: '0.45rem',
                   padding: '0.4rem 0.75rem',
                   borderRadius: '9999px',
                   fontSize: '0.75rem',
@@ -226,7 +283,24 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                   transition: 'all 0.2s'
                 }}
               >
-                {activeStep > step.num ? <CheckCircle2 size={14} /> : <span>{step.num}</span>}
+                {activeStep > step.num ? (
+                  <CheckCircle2 size={15} color="#10B981" />
+                ) : (
+                  <span style={{
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    background: activeStep === step.num ? '#00ADB5' : '#CBD5E1',
+                    color: activeStep === step.num ? '#FFFFFF' : '#475569',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.7rem',
+                    fontWeight: '800'
+                  }}>
+                    {step.num}
+                  </span>
+                )}
                 <span>{step.label}</span>
               </button>
             ))}
@@ -403,22 +477,50 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                 Funds are held securely by DC Point until you inspect and approve final delivery. Neither party can tamper with funds.
               </p>
 
-              <div style={{ maxWidth: '420px', margin: '0 auto 1.5rem auto', background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  <span>Listing Amount:</span> <strong>₹{trade.price.toFixed(2)}</strong>
+              <div style={{ maxWidth: '480px', margin: '0 auto 1.5rem auto', background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'left' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#00ADB5', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                  Escrow Vault Breakdown ({isRental ? 'Rental Vault' : 'Purchase Vault'})
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                  <span>Escrow Fee (5%):</span> <strong>₹{(trade.escrowFee || trade.price * 0.05).toFixed(2)}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.75rem', borderTop: '1px solid #CBD5E1', fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>
-                  <span>Total Escrow Deposit:</span> <span style={{ color: '#10B981' }}>₹{(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)}</span>
+
+                {isRental ? (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
+                      <span>Daily Rental Rate (₹{basePrice} × {rentalDays} days):</span> <strong>₹{rentalSubtotal.toFixed(2)}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
+                      <span>Refundable Security Deposit Hold:</span> <strong>₹{securityDeposit.toFixed(2)}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#64748B' }}>
+                      <span>Platform Escrow Fee (5% of rental):</span> <strong>₹{escrowFee.toFixed(2)}</strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
+                      <span>Listing Purchase Price:</span> <strong>₹{basePrice.toFixed(2)}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#64748B' }}>
+                      <span>Platform Escrow Fee (5%):</span> <strong>₹{escrowFee.toFixed(2)}</strong>
+                    </div>
+                  </>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.75rem', marginTop: '0.5rem', borderTop: '2px dashed #CBD5E1', fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>
+                  <span>Total Escrow Deposit Vault:</span> <span style={{ color: '#10B981' }}>₹{totalEscrowRequired.toFixed(2)}</span>
                 </div>
               </div>
 
-              <button className="btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.05rem' }} onClick={handleDepositEscrow}>
-                <Lock size={18} />
-                <span>Confirm & Lock Funds in Escrow Vault</span>
-              </button>
+              {isSuperAdmin ? (
+                <div style={{ background: '#F3E8FF', border: '1px solid #C084FC', padding: '0.85rem 1.5rem', borderRadius: '10px', color: '#6B21A8', fontSize: '0.85rem', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <ShieldCheck size={18} color="#8B5CF6" />
+                  <span>Super Admin Read-Only Mode: Escrow deposit is strictly authorized by Buyer ({trade.buyerName}).</span>
+                </div>
+              ) : (
+                <button className="btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.05rem' }} onClick={handleDepositEscrow}>
+                  <Lock size={18} />
+                  <span>Confirm & Lock ₹{totalEscrowRequired.toFixed(2)} in Escrow</span>
+                </button>
+              )}
             </div>
           )}
 
@@ -472,19 +574,23 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                   )}
 
                   {/* Add progress update form for seller */}
-                  <form onSubmit={handleAddProgressUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #CBD5E1' }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0B192C' }}>Post Seller Work-In-Progress Update:</label>
-                    <input 
-                      type="text" 
-                      placeholder={`e.g. Completed initial testing and quality check for ${trade.title}...`}
-                      value={newUpdateText}
-                      onChange={e => setNewUpdateText(e.target.value)}
-                      style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
-                    />
-                    <button type="submit" className="btn-navy btn-sm" style={{ alignSelf: 'flex-end' }}>
-                      <Upload size={14} /> Upload Progress Proof
-                    </button>
-                  </form>
+                  {!isSuperAdmin && (
+                    <form onSubmit={handleAddProgressUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #CBD5E1' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0B192C' }}>
+                        {currentUser.id === trade.sellerId ? '🎨 Post Work-In-Progress Update (Seller):' : '💬 Post Work Feedback / Question:'}
+                      </label>
+                      <input 
+                        type="text" 
+                        placeholder={currentUser.id === trade.sellerId ? `e.g. Completed initial testing and quality check for ${trade.title}...` : 'e.g. Please confirm initials embossing looks good...'}
+                        value={newUpdateText}
+                        onChange={e => setNewUpdateText(e.target.value)}
+                        style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
+                      />
+                      <button type="submit" className="btn-navy btn-sm" style={{ alignSelf: 'flex-end' }}>
+                        <Upload size={14} /> Upload Progress Proof
+                      </button>
+                    </form>
+                  )}
                 </div>
 
                 {/* Checkpoint approval action */}
@@ -498,10 +604,16 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                     </p>
                   </div>
 
-                  <button className="btn-primary" style={{ width: '100%', padding: '0.85rem' }} onClick={handleApproveProgress}>
-                    <CheckCircle2 size={18} />
-                    <span>Approve Sample & Proceed to Delivery</span>
-                  </button>
+                  {isSuperAdmin ? (
+                    <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', padding: '0.75rem', borderRadius: '8px', fontSize: '0.78rem', color: '#8B5CF6', fontWeight: '700', textAlign: 'center' }}>
+                      👑 Read-Only Mode: Checkpoint approval is strictly managed by Buyer ({trade.buyerName}).
+                    </div>
+                  ) : (
+                    <button className="btn-primary" style={{ width: '100%', padding: '0.85rem' }} onClick={handleApproveProgress}>
+                      <CheckCircle2 size={18} />
+                      <span>Approve Sample & Proceed to Delivery</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -565,15 +677,30 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                 <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <h5 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0B192C' }}>Release Escrow Payment</h5>
-                    <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '0.4rem 0 1rem 0' }}>
-                      Triggers instant transfer of <strong>₹{(trade.price || 185).toFixed(2)}</strong> to {trade.sellerName}'s wallet.
-                    </p>
+                    <div style={{ background: '#ECFDF5', padding: '0.75rem', borderRadius: '8px', border: '1px solid #A7F3D0', margin: '0.75rem 0', fontSize: '0.8rem', textAlign: 'left' }}>
+                      <div style={{ color: '#047857', fontWeight: '700' }}>💸 Payout Allocation:</div>
+                      <div>• Transfer to Seller ({trade.sellerName}): <strong>₹{rentalSubtotal.toFixed(2)}</strong></div>
+                      {isRental && <div>• Refund Security Deposit to Buyer: <strong>₹{securityDeposit.toFixed(2)}</strong></div>}
+                      <div style={{ color: '#64748B' }}>• Platform Escrow Fee Retained: <strong>₹{escrowFee.toFixed(2)}</strong></div>
+                    </div>
                   </div>
 
-                  <button className="btn-primary" style={{ padding: '0.85rem', width: '100%' }} onClick={handleCompleteDeliveryChecklist}>
-                    <Sparkles size={18} />
-                    <span>Approve & Release Payment to Seller</span>
-                  </button>
+                  {isSuperAdmin ? (
+                    <div style={{ background: '#F3E8FF', border: '1px solid #C084FC', padding: '1rem', borderRadius: '10px', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#6B21A8', fontWeight: '800', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
+                        <ShieldCheck size={16} color="#8B5CF6" />
+                        <span>Super Admin Read-Only Governance Mode</span>
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: '#581C87', margin: 0, lineHeight: '1.4' }}>
+                        Admins cannot access customer funds or trigger payment release. Payment release is strictly controlled by Buyer ({trade.buyerName}) upon inspection.
+                      </p>
+                    </div>
+                  ) : (
+                    <button className="btn-primary" style={{ padding: '0.85rem', width: '100%' }} onClick={handleCompleteDeliveryChecklist}>
+                      <Sparkles size={18} />
+                      <span>Approve & Release Payment to Seller</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
