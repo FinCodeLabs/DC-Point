@@ -8,6 +8,12 @@ import djSystemImg from '../assets/dj_system.png';
 import droneRigImg from '../assets/drone_rig.png';
 import audioPackImg from '../assets/audio_pack.png';
 import lightingKitImg from '../assets/lighting_kit.png';
+import woodKeyboardImg from '../assets/wood_keyboard.png';
+import edcToolImg from '../assets/edc_tool.png';
+import alpacaBlanketImg from '../assets/alpaca_blanket.png';
+import redCameraImg from '../assets/red_camera.png';
+import vrCameraImg from '../assets/vr_camera.png';
+import strobePackImg from '../assets/strobe_pack.png';
 
 export const FALLBACK_IMAGES = {
   leatherBag: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%231E293B"/><rect x="150" y="120" width="300" height="200" rx="16" fill="%23854D0E" stroke="%23CA8A04" stroke-width="4"/><path d="M 200 120 L 200 80 Q 300 50 400 80 L 400 120" fill="none" stroke="%23CA8A04" stroke-width="6"/><rect x="270" y="200" width="60" height="40" rx="6" fill="%23EAB308"/><text x="300" y="360" font-family="sans-serif" font-size="20" font-weight="bold" fill="%2394A3B8" text-anchor="middle">Full-Grain Leather Bag</text></svg>',
@@ -193,6 +199,93 @@ export const INITIAL_PURCHASE_LISTINGS = [
     },
     suggested: false,
     bestSeller: false
+  },
+  {
+    id: 'prod-005',
+    title: 'Hand-Carved Solid Walnut Mechanical Keyboard & Custom Brass Plate',
+    category: 'Tech & Electronics',
+    type: 'purchase',
+    price: 290,
+    unit: 'per unit',
+    sellerId: 'user_buyer_1',
+    sellerName: 'Alex Mercer (TimberTech Studios)',
+    sellerRating: 4.93,
+    sellerCompletedTrades: 19,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'AI Compliance Passed • Certified Craftsmanship',
+    image: woodKeyboardImg,
+    description: 'Custom handcrafted 75% mechanical keyboard housed in a solid North American walnut wood chassis with laser-engraved brass plate and hot-swappable tactile switches.',
+    specifications: [
+      { label: 'Wood Chassis', value: 'Solid American Black Walnut (Oiled Finish)' },
+      { label: 'Plate & PCB', value: 'CNC Brass Plate with Hotswap RGB PCB' },
+      { label: 'Connectivity', value: 'USB-C Braided Cable + Bluetooth 5.2' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 6,
+      inspectionWindowHours: 48,
+      qualityStandard: 'Key switch sound check video & scratch-free wood finish inspection',
+      customNotes: 'Include extra walnut wrist rest and custom keycap puller.'
+    },
+    suggested: true,
+    bestSeller: true
+  },
+  {
+    id: 'prod-006',
+    title: 'Titanium Precision CNC Machined EDC Pen & Multi-Tool Set',
+    category: 'Industrial & Tools',
+    type: 'purchase',
+    price: 165,
+    unit: 'per set',
+    sellerId: 'seller_precision_labs',
+    sellerName: 'PrecisionCraft Labs',
+    sellerRating: 4.89,
+    sellerCompletedTrades: 27,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Material Certificate Verified',
+    image: edcToolImg,
+    description: 'Aerospace-grade Grade 5 Titanium bolt-action pen combined with a precision CNC machined multi-tool pry bar. Corrosion-proof for daily carry.',
+    specifications: [
+      { label: 'Material', value: 'Grade 5 (Ti-6Al-4V) Aerospace Titanium' },
+      { label: 'Refill Spec', value: 'Schmidt EasyFlow 9000 Medium Black' },
+      { label: 'Finish', value: 'Stonewashed Matte Titanium' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 4,
+      inspectionWindowHours: 24,
+      qualityStandard: 'Bolt action smoothness check & hardness test certificate',
+      customNotes: 'Laser-engrave custom serial number #DC-TI-2026 on pen pocket clip.'
+    },
+    suggested: false,
+    bestSeller: false
+  },
+  {
+    id: 'prod-007',
+    title: 'Custom Hand-Woven Organic Alpaca Wool Blanket & Throw',
+    category: 'Craft & Goods',
+    type: 'purchase',
+    price: 135,
+    unit: 'per piece',
+    sellerId: 'seller_highland_wool',
+    sellerName: 'Highland Artisans Co.',
+    sellerRating: 4.97,
+    sellerCompletedTrades: 45,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Eco-Textile Certified',
+    image: alpacaBlanketImg,
+    description: '100% natural, hypoallergenic organic baby alpaca wool throw blanket. Hand-loomed by master Andean weavers without synthetic dyes.',
+    specifications: [
+      { label: 'Fabric Composition', value: '100% Organic Baby Alpaca Wool' },
+      { label: 'Dimensions', value: '70" x 50" (178cm x 127cm)' },
+      { label: 'Weave Type', value: 'Twill Weave with Hand-Twisted Fringes' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 5,
+      inspectionWindowHours: 48,
+      qualityStandard: 'Zero synthetic fiber test & unbleached natural dye verification',
+      customNotes: 'Package in cedar wood gift box with handwritten craft certificate.'
+    },
+    suggested: true,
+    bestSeller: true
   }
 ];
 
@@ -346,6 +439,96 @@ export const INITIAL_RENT_LISTINGS = [
     },
     suggested: false,
     bestSeller: true
+  },
+  {
+    id: 'rent-006',
+    title: 'RED V-Raptor XL 8K VV Cinema Camera & Anamorphic Lens Kit',
+    category: 'Rentals',
+    type: 'rent',
+    price: 340,
+    unit: 'per day',
+    rentalDeposit: 750,
+    sellerId: 'seller_cinestar',
+    sellerName: 'CineStar Motion Equipment',
+    sellerRating: 4.99,
+    sellerCompletedTrades: 84,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Full Production Insurance Linked',
+    image: redCameraImg,
+    description: 'Flagship RED V-Raptor XL 8K VV camera system with Cooke Anamorphic/i Full Frame Plus lens set, RED Touch 7.0" LCD, and RED Pro V-Lock batteries.',
+    specifications: [
+      { label: 'Sensor Spec', value: '35.4 Megapixel V-RAPTOR 8K VV' },
+      { label: 'Framerates', value: '8K 120fps • 4K 240fps 17+ stops DR' },
+      { label: 'Security Deposit', value: '₹750 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Black balance calibration proof & sensor dust check video',
+      customNotes: 'Include dual 2TB RED PRO CFexpress cards and ARRI Production Matte Box.'
+    },
+    suggested: true,
+    bestSeller: true
+  },
+  {
+    id: 'rent-007',
+    title: 'Insta360 Pro 2 8K 3D VR Camera & Spatial Audio Recording Kit',
+    category: 'Rentals',
+    type: 'rent',
+    price: 180,
+    unit: 'per day',
+    rentalDeposit: 350,
+    sellerId: 'seller_vr_vault',
+    sellerName: 'Immersive Media Vault',
+    sellerRating: 4.92,
+    sellerCompletedTrades: 29,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'VR Calibration Checked',
+    image: vrCameraImg,
+    description: 'Professional 6-lens 8K 3D 360 degree virtual reality camera system with Farsight long range live monitoring system and Zoom H6 spatial audio mic.',
+    specifications: [
+      { label: 'Resolution', value: '8K 3D @ 30fps • 4K 3D @ 120fps' },
+      { label: 'Stitching Engine', value: 'Optical Flow Real-Time 3D Stitching' },
+      { label: 'Security Deposit', value: '₹350 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 8,
+      qualityStandard: 'Lens alignment test photo & Farsight wireless video check',
+      customNotes: 'Include carbon fiber monopod tripod and heavy Pelican storm case.'
+    },
+    suggested: false,
+    bestSeller: false
+  },
+  {
+    id: 'rent-008',
+    title: 'Profoto Pro-11 2400 AirTTL Studio Flash Generator & Twin Heads',
+    category: 'Rentals',
+    type: 'rent',
+    price: 210,
+    unit: 'per day',
+    rentalDeposit: 450,
+    sellerId: 'seller_flashworks',
+    sellerName: 'FlashWorks Studio Rentals',
+    sellerRating: 4.96,
+    sellerCompletedTrades: 51,
+    complianceStatus: 'Verified',
+    complianceBadgeText: 'Electrical Safety Inspected',
+    image: strobePackImg,
+    description: '2400Ws flagship studio flash generator with 1/80,000s flash duration freeze capability, dual ProHead Plus heads, Air Remote TTL, and 2x Softboxes.',
+    specifications: [
+      { label: 'Power Output', value: '2400Ws across 11 f-stops (0.1 stop precision)' },
+      { label: 'Recycle Time', value: '0.01 to 0.7 seconds high-speed burst' },
+      { label: 'Security Deposit', value: '₹450 (Held in DC Point Escrow)' }
+    ],
+    sampleAgreementTerms: {
+      deliveryWindowDays: 1,
+      inspectionWindowHours: 12,
+      qualityStandard: 'Flash duration recycling test report & modeling lamp check',
+      customNotes: 'Include Profoto Air Remote TTL for Sony / Canon / Nikon.'
+    },
+    suggested: true,
+    bestSeller: false
   }
 ];
 
