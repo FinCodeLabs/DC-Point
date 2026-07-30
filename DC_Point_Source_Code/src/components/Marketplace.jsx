@@ -25,7 +25,14 @@ export default function Marketplace({
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('rating');
 
-  const categories = ['All', 'Craft & Goods', 'Tech & Electronics', 'Industrial & Tools', 'Rentals'];
+  // Reset category filter when switching between Purchase and Rent markets
+  React.useEffect(() => {
+    setSelectedCategory('All');
+  }, [activeMarket]);
+
+  const categories = activeMarket === 'purchase' 
+    ? ['All', 'Craft & Goods', 'Tech & Electronics', 'Industrial & Tools']
+    : ['All', 'Rentals', 'Craft & Goods', 'Tech & Electronics'];
 
   // Filter listings based on active market, search query, and category
   const filteredListings = listings.filter(item => {
