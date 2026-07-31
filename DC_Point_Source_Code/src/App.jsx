@@ -9,6 +9,7 @@ import DisputeModal from './components/DisputeModal';
 import Dashboard from './components/Dashboard';
 import PublicProfileModal from './components/PublicProfileModal';
 import AuthModal from './components/AuthModal';
+import LegalDocsModal from './components/LegalDocsModal';
 import { CheckCircle2 } from 'lucide-react';
 
 import { 
@@ -68,6 +69,7 @@ export default function App() {
   const [selectedSellerProfileId, setSelectedSellerProfileId] = useState(null);
   const [isCreateListingOpen, setIsCreateListingOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [activeLegalDocTab, setActiveLegalDocTab] = useState(null); // 'ai-compliance' | 'escrow-protection' | 'dispute-resolution'
 
   // Toast Notification System
   const [toastMessage, setToastMessage] = useState(null);
@@ -262,6 +264,7 @@ export default function App() {
             setIsCreateListingOpen(true);
           }
         }}
+        onOpenLegalDoc={(docTab) => setActiveLegalDocTab(docTab)}
         activeTradeCount={activeTrades.length}
         notifications={notifications}
         onMarkNotificationRead={handleMarkNotificationRead}
@@ -287,6 +290,7 @@ export default function App() {
                 setIsCreateListingOpen(true);
               }
             }}
+            onOpenLegalDoc={(docTab) => setActiveLegalDocTab(docTab)}
           />
         )}
 
@@ -392,6 +396,14 @@ export default function App() {
         <PublicProfileModal
           userId={selectedSellerProfileId}
           onClose={() => setSelectedSellerProfileId(null)}
+        />
+      )}
+
+      {/* Platform & Legal Documentation Viewer */}
+      {activeLegalDocTab && (
+        <LegalDocsModal
+          initialTab={activeLegalDocTab}
+          onClose={() => setActiveLegalDocTab(null)}
         />
       )}
     </div>

@@ -28,6 +28,7 @@ export default function Header({
   isAuthenticated,
   onOpenAuthModal,
   onOpenCreateListing, 
+  onOpenLegalDoc,
   activeTradeCount,
   notifications = [],
   onMarkNotificationRead,
@@ -250,7 +251,13 @@ export default function Header({
                           <ChevronRight size={14} color="#64748B" />
                         </button>
 
-                        <div style={{ padding: '0.5rem 0.65rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.25)', marginTop: '0.4rem' }}>
+                        <div 
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            if (onOpenLegalDoc) onOpenLegalDoc('escrow-protection');
+                          }}
+                          style={{ padding: '0.5rem 0.65rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.25)', marginTop: '0.4rem', cursor: 'pointer' }}
+                        >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#10B981', fontWeight: '700', fontSize: '0.78rem' }}>
                             <ShieldCheck size={14} /> 100% Escrow Vault Protected
                           </div>

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { TRUST_METRICS, PLATFORM_FAQS } from '../data/mockData';
 
-export default function LandingPage({ onExploreMarket, onStartSelling }) {
+export default function LandingPage({ onExploreMarket, onStartSelling, onOpenLegalDoc }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   return (
@@ -427,9 +427,9 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
             <div>
               <h4 style={{ color: '#FFFFFF', fontSize: '1rem', marginBottom: '1rem' }}>Platform & Legal</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
-                <li><a>AI Compliance Rules</a></li>
-                <li><a>Escrow Protection Terms</a></li>
-                <li><a>Dispute Resolution Guidelines</a></li>
+                <li><a onClick={() => onOpenLegalDoc && onOpenLegalDoc('ai-compliance')} style={{ cursor: 'pointer', transition: 'color 0.2s' }}>AI Compliance Rules</a></li>
+                <li><a onClick={() => onOpenLegalDoc && onOpenLegalDoc('escrow-protection')} style={{ cursor: 'pointer', transition: 'color 0.2s' }}>Escrow Protection Terms</a></li>
+                <li><a onClick={() => onOpenLegalDoc && onOpenLegalDoc('dispute-resolution')} style={{ cursor: 'pointer', transition: 'color 0.2s' }}>Dispute Resolution Guidelines</a></li>
               </ul>
             </div>
 
