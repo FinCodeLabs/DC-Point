@@ -157,21 +157,10 @@ export default function ListingDetailModal({ listing, onClose, onStartTrade, onV
           </button>
 
           {isAdmin ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.85rem', color: '#8B5CF6', fontWeight: '600' }}>
-                👑 Super Admin Account (Switch to Buyer role to purchase or test checkout)
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span className="badge badge-navy" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8B5CF6', border: '1px solid #8B5CF6', padding: '0.5rem 0.85rem', fontSize: '0.85rem' }}>
+                👑 Super Admin View Only — Platform Administration Restricted
               </span>
-              <button 
-                className="btn-primary" 
-                onClick={() => {
-                  onClose();
-                  if (onSwitchUser) onSwitchUser('user_buyer_1');
-                }}
-                style={{ minHeight: '44px' }}
-              >
-                <span>Switch to Buyer Role</span>
-                <ArrowRight size={16} aria-hidden="true" />
-              </button>
             </div>
           ) : (
             <button className="btn-primary" onClick={() => onStartTrade(listing)} style={{ minHeight: '44px' }}>

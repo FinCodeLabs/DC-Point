@@ -20,9 +20,26 @@ import {
 } from './data/mockData';
 
 export default function App() {
+  // User Personas & Active Session
+  const [allUsers, setAllUsers] = useState(INITIAL_USER_PERSONAS);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUserId = sessionStorage.getItem('dc_authenticated_user');
+    const found = INITIAL_USER_PERSONAS.find(u => u.id === savedUserId);
+    return found || INITIAL_USER_PERSONAS[0];
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!sessionStorage.getItem('dc_authenticated_user');
+  });
+
   // Navigation & Market States
   const [activeMarket, setActiveMarket] = useState('purchase'); // 'purchase' | 'rent'
-  const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'marketplace' | 'dashboard'
+  const [currentTab, setCurrentTab] = useState(() => {
+    const savedUserId = sessionStorage.getItem('dc_authenticated_user');
+    if (savedUserId === 'user_admin_1') return 'dashboard';
+    if (savedUserId === 'user_seller_1') return 'dashboard';
+    if (savedUserId) return 'marketplace';
+    return 'home'; // Default to home for normal initial load
+  });
 
   // Handle SPA GitHub Pages routing redirect restore
   useEffect(() => {
@@ -36,11 +53,6 @@ export default function App() {
       }
     }
   }, []);
-
-
-  // User Personas & Active Session
-  const [allUsers, setAllUsers] = useState(INITIAL_USER_PERSONAS);
-  const [currentUser, setCurrentUser] = useState(INITIAL_USER_PERSONAS[0]); // Alex Mercer by default
 
   // Notifications State
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
@@ -106,13 +118,43 @@ export default function App() {
     }
   };
 
-  // Persona / Role Switch Handler
-  const handleSwitchUser = (userId) => {
-    const found = allUsers.find(u => u.id === userId);
-    if (found) {
-      setCurrentUser(found);
-      showToast(`Switched active portal to ${found.name} (${found.role.split(' ')[0]})`);
+  // Login Handler & Role Restrictions Enforcement
+  const handleLoginSuccess = (targetUserId) => {
+    const userToLogin = targetUserId ? allUsers.find(u => u.id === targetUserId) : allUsers[0];
+    if (userToLogin) {
+      setCurrentUser(userToLogin);
+      setIsAuthenticated(true);
+      setIsAuthModalOpen(false);
+      sessionStorage.setItem('dc_authenticated_user', userToLogin.id);
+
+      // Enforce Role Restrictions
+      if (userToLogin.id === 'user_admin_1' || userToLogin.role.toLowerCase().includes('admin')) {
+        // Super Admin: Redirects strictly to platform administration dashboard
+        setCurrentTab('dashboard');
+      } else if (userToLogin.id === 'user_seller_1' || userToLogin.role.toLowerCase().includes('seller')) {
+        // Seller: Redirects to seller dashboard/management view
+        setCurrentTab('dashboard');
+      } else {
+        // Buyer: Redirects to buyer marketplace and browsing view
+        setCurrentTab('marketplace');
+        setActiveMarket('purchase');
+      }
+
+      showToast(`Logged in successfully as ${userToLogin.name} (${userToLogin.role.split(' ')[0]})`);
     }
+  };
+
+  // Logout Handler (Role switching happens ONLY via logout)
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('dc_authenticated_user');
+    setCurrentTab('home');
+    showToast('Logged out. You are now in public browsing mode.');
+  };
+
+  // Switch User Handler (Internal state sync)
+  const handleSwitchUser = (userId) => {
+    handleLoginSuccess(userId);
   };
 
   // Start new trade flow from listing modal
@@ -210,14 +252,21 @@ export default function App() {
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         currentUser={currentUser}
-        onSwitchUser={handleSwitchUser}
-        allUsers={allUsers}
-        onOpenCreateListing={() => setIsCreateListingOpen(true)}
+        isAuthenticated={isAuthenticated}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenCreateListing={() => {
+          if (!isAuthenticated) {
+            setIsAuthModalOpen(true);
+            showToast('Please select a role to list items or create seller gear.');
+          } else {
+            setIsCreateListingOpen(true);
+          }
+        }}
         activeTradeCount={activeTrades.length}
         notifications={notifications}
         onMarkNotificationRead={handleMarkNotificationRead}
         onOpenTradeFromNotification={handleOpenTradeFromNotification}
+        onLogout={handleLogout}
         showToast={showToast}
       />
 
@@ -230,7 +279,14 @@ export default function App() {
               setCurrentTab('marketplace');
               showToast(`Exploring ${marketType === 'purchase' ? 'Purchase' : 'Rent'} Market`);
             }}
-            onStartSelling={() => setIsCreateListingOpen(true)}
+            onStartSelling={() => {
+              if (!isAuthenticated) {
+                setIsAuthModalOpen(true);
+                showToast('Please select a Seller role to start listing items.');
+              } else {
+                setIsCreateListingOpen(true);
+              }
+            }}
           />
         )}
 
@@ -240,7 +296,13 @@ export default function App() {
             setActiveMarket={setActiveMarket}
             listings={listings}
             onSelectListing={(item) => setSelectedListing(item)}
-            onOpenCreateListing={() => setIsCreateListingOpen(true)}
+            onOpenCreateListing={() => {
+              if (!isAuthenticated) {
+                setIsAuthModalOpen(true);
+              } else {
+                setIsCreateListingOpen(true);
+              }
+            }}
             onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
             currentUser={currentUser}
           />
@@ -261,12 +323,29 @@ export default function App() {
 
       {/* MODALS */}
 
+      {/* On-Demand Role Selection Authentication Modal */}
+      {isAuthModalOpen && (
+        <AuthModal
+          isMandatory={false}
+          onClose={() => setIsAuthModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
       {/* Listing Detail Modal */}
       {selectedListing && (
         <ListingDetailModal
           listing={selectedListing}
           onClose={() => setSelectedListing(null)}
-          onStartTrade={handleStartTrade}
+          onStartTrade={(listing) => {
+            if (!isAuthenticated) {
+              setSelectedListing(null);
+              setIsAuthModalOpen(true);
+              showToast('Please select a Buyer role to initiate escrow trades.');
+            } else {
+              handleStartTrade(listing);
+            }
+          }}
           onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
           currentUser={currentUser}
           onSwitchUser={handleSwitchUser}
@@ -313,21 +392,6 @@ export default function App() {
         <PublicProfileModal
           userId={selectedSellerProfileId}
           onClose={() => setSelectedSellerProfileId(null)}
-        />
-      )}
-
-      {/* Auth Modal */}
-      {isAuthModalOpen && (
-        <AuthModal
-          onClose={() => setIsAuthModalOpen(false)}
-          onLoginSuccess={(targetUserId) => {
-            setIsAuthModalOpen(false);
-            const userToLogin = targetUserId ? allUsers.find(u => u.id === targetUserId) : allUsers[0];
-            if (userToLogin) {
-              setCurrentUser(userToLogin);
-              showToast(`Logged in successfully as ${userToLogin.name} (${userToLogin.role.split(' ')[0]})`);
-            }
-          }}
         />
       )}
     </div>

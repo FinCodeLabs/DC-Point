@@ -147,16 +147,6 @@ export default function Dashboard({
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1.1rem', background: 'rgba(139, 92, 246, 0.25)', border: '1px solid #8B5CF6', borderRadius: '10px', fontSize: '0.85rem', color: '#A78BFA', fontWeight: '700' }}>
                 <Percent size={18} aria-hidden="true" /> 5% Escrow Commission Rate Active
               </div>
-              <button
-                className="btn-primary"
-                onClick={() => onSwitchUser && onSwitchUser('user_buyer_1')}
-                style={{ background: '#00ADB5', border: 'none', minHeight: '44px' }}
-                title="Switch to standard Buyer account to test or purchase items"
-                aria-label="Switch to Buyer View Sandbox"
-              >
-                <UserCheck size={18} aria-hidden="true" />
-                <span>Switch to Buyer View / Sandbox</span>
-              </button>
             </div>
           ) : isSellerRole ? (
             <button className="btn-primary" onClick={onOpenCreateListing} style={{ minHeight: '44px' }}>

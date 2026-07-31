@@ -450,24 +450,36 @@ html, body {
   }
 
   .nav-main {
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
   }
 
+  /* Hide header desktop market toggle bar on mobile */
   .market-switch-tab {
-    width: 100%;
-    justify-content: center;
-    order: 3;
-    margin-top: 0.25rem;
+    display: none !important;
   }
 
-  .market-tab-btn {
-    flex: 1;
-    text-align: center;
-    justify-content: center;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
+  /* Show mobile market switcher in body content */
+  .mobile-market-switch {
+    display: flex !important;
+  }
+
+  /* Hide line breaks in hero heading on mobile */
+  .desktop-only-br {
+    display: none;
+  }
+
+  /* Stack hero CTA buttons vertically on mobile */
+  .hero-cta-group {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.85rem !important;
+  }
+
+  .hero-cta-group .hero-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 48px !important;
   }
 
   /* Ensure touch targets are at least 44px on mobile */
@@ -495,12 +507,6 @@ html, body {
 @media (max-width: 480px) {
   .grid-4, .grid-3, .grid-2 { 
     grid-template-columns: 1fr; 
-  }
-
-  .persona-bar .container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
   }
 
   .toast-notification {

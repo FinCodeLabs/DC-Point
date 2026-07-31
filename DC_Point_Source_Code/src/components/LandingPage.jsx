@@ -62,13 +62,13 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
             </div>
 
             <h1 style={{
-              fontSize: '3.25rem',
+              fontSize: 'clamp(1.85rem, 5vw, 3.25rem)',
               fontWeight: '800',
-              lineHeight: '1.15',
+              lineHeight: '1.2',
               color: '#FFFFFF',
               marginBottom: '1.5rem'
             }}>
-              Trade with Confidence — <br />
+              Trade with Confidence — <br className="desktop-only-br" />
               <span style={{
                 background: 'linear-gradient(90deg, #00ADB5 0%, #10B981 100%)',
                 WebkitBackgroundClip: 'text',
@@ -79,7 +79,7 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
             </h1>
 
             <p style={{
-              fontSize: '1.2rem',
+              fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
               color: '#94A3B8',
               lineHeight: '1.7',
               marginBottom: '2.5rem',
@@ -89,8 +89,8 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
               DC Point connects small-scale sellers, individual artisans, and rental owners with buyers by turning informal sales into legally protected trade agreements backed by milestone escrow payments.
             </p>
 
-            {/* CTAs */}
-            <div style={{
+            {/* CTAs Stacked Vertically on Mobile */}
+            <div className="hero-cta-group" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -98,7 +98,7 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
               flexWrap: 'wrap'
             }}>
               <button 
-                className="btn-primary" 
+                className="btn-primary hero-btn" 
                 style={{ padding: '0.9rem 2rem', fontSize: '1.05rem' }}
                 onClick={() => onExploreMarket('purchase')}
               >
@@ -107,7 +107,7 @@ export default function LandingPage({ onExploreMarket, onStartSelling }) {
               </button>
 
               <button 
-                className="btn-outline" 
+                className="btn-outline hero-btn" 
                 style={{
                   padding: '0.9rem 2rem', 
                   fontSize: '1.05rem',

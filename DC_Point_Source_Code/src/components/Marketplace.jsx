@@ -80,6 +80,59 @@ export default function Marketplace({
 
   return (
     <div className="container" style={{ padding: '2.5rem 1.5rem 5rem 1.5rem' }}>
+      {/* Mobile Market Switcher (Visible on Mobile Screens < 768px) */}
+      <div className="mobile-market-switch" style={{ marginBottom: '1.5rem', display: 'none' }}>
+        <div style={{
+          display: 'flex',
+          width: '100%',
+          background: '#0B192C',
+          padding: '0.35rem',
+          borderRadius: '12px',
+          border: '1px solid rgba(0, 173, 181, 0.3)'
+        }}>
+          <button
+            onClick={() => setActiveMarket('purchase')}
+            style={{
+              flex: 1,
+              padding: '0.65rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeMarket === 'purchase' ? '#00ADB5' : 'transparent',
+              color: '#FFFFFF',
+              fontWeight: '700',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              minHeight: '44px'
+            }}
+          >
+            <ShoppingBag size={16} /> Purchase Market
+          </button>
+          <button
+            onClick={() => setActiveMarket('rent')}
+            style={{
+              flex: 1,
+              padding: '0.65rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeMarket === 'rent' ? '#00ADB5' : 'transparent',
+              color: '#FFFFFF',
+              fontWeight: '700',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              minHeight: '44px'
+            }}
+          >
+            <Repeat size={16} /> Rent Market
+          </button>
+        </div>
+      </div>
+
       {/* Header Banner */}
       <div style={{
         background: 'linear-gradient(135deg, #0B192C 0%, #1E3E62 100%)',
