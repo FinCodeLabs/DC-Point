@@ -40,6 +40,9 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   const isSeller = !isSuperAdmin && (currentUser.id === trade.sellerId || currentUser.id === 'user_seller_1' || currentUser.role?.toLowerCase().includes('seller'));
   const isBuyer = !isSuperAdmin && !isSeller;
 
+  const canSignAsBuyer = isBuyer || isSuperAdmin || currentUser.id === trade.buyerId;
+  const canSignAsSeller = isSeller || isSuperAdmin || currentUser.id === trade.sellerId;
+
   // Calculate exact financials based on item type
   const isRental = trade.type === 'rent';
   const rentalDays = trade.rentalDurationDays || 3;
