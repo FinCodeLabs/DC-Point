@@ -37,11 +37,11 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
 
   // Check role of current logged-in user
   const isSuperAdmin = currentUser.id === 'user_admin_1' || currentUser.role?.toLowerCase().includes('admin');
-  const isSeller = !isSuperAdmin && (currentUser.id === trade.sellerId || currentUser.id === 'user_seller_1' || currentUser.role?.toLowerCase().includes('seller'));
-  const isBuyer = !isSuperAdmin && !isSeller;
+  const isTradeBuyer = currentUser.id === trade.buyerId || currentUser.id === 'user_buyer_1';
+  const isTradeSeller = currentUser.id === trade.sellerId || currentUser.id === 'user_seller_1';
 
-  const canSignAsBuyer = isBuyer || isSuperAdmin || currentUser.id === trade.buyerId;
-  const canSignAsSeller = isSeller || isSuperAdmin || currentUser.id === trade.sellerId;
+  const canSignAsBuyer = isSuperAdmin || (isTradeBuyer && currentUser.id !== trade.sellerId);
+  const canSignAsSeller = isSuperAdmin || (isTradeSeller && currentUser.id !== trade.buyerId);
 
   // Calculate exact financials based on item type
   const isRental = trade.type === 'rent';
@@ -492,11 +492,13 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                         Buyer Signature: {trade.buyerName}
                       </div>
                       {agreementForm.signedByBuyer ? (
-                        <div style={{ fontSize: '0.75rem', color: '#047857' }}>✓ Digitally Signed & Timestamped</div>
-                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.25rem' }}>✓ Digitally Signed & Timestamped</div>
+                      ) : canSignAsBuyer ? (
                         <button className="btn-navy btn-sm" style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => handleSignAgreement('buyer')}>
                           <PenTool size={14} /> Accept & Sign as Buyer
                         </button>
+                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: '#D97706', marginTop: '0.25rem', fontWeight: '600' }}>⏳ Waiting for Buyer's Acceptance</div>
                       )}
                     </div>
 
@@ -506,11 +508,13 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                         Seller Signature: {trade.sellerName}
                       </div>
                       {agreementForm.signedBySeller ? (
-                        <div style={{ fontSize: '0.75rem', color: '#047857' }}>✓ Digitally Signed & Timestamped</div>
-                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.25rem' }}>✓ Digitally Signed & Timestamped</div>
+                      ) : canSignAsSeller ? (
                         <button className="btn-navy btn-sm" style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => handleSignAgreement('seller')}>
                           <PenTool size={14} /> Accept & Sign as Seller
                         </button>
+                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: '#D97706', marginTop: '0.25rem', fontWeight: '600' }}>⏳ Waiting for Seller's Acceptance</div>
                       )}
                     </div>
                   </div>
