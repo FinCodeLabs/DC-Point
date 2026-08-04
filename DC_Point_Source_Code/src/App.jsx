@@ -65,6 +65,7 @@ export default function App() {
   // Modals
   const [selectedListing, setSelectedListing] = useState(null);
   const [activeTradeForWizard, setActiveTradeForWizard] = useState(null);
+  const [isWizardReadOnly, setIsWizardReadOnly] = useState(false);
   const [tradeForDispute, setTradeForDispute] = useState(null);
   const [selectedSellerProfileId, setSelectedSellerProfileId] = useState(null);
   const [isCreateListingOpen, setIsCreateListingOpen] = useState(false);
@@ -317,7 +318,10 @@ export default function App() {
             currentUser={currentUser}
             activeTrades={activeTrades}
             allListings={listings}
-            onOpenTradeWizard={(trade) => setActiveTradeForWizard(trade)}
+            onOpenTradeWizard={(trade, readOnly = false) => {
+              setActiveTradeForWizard(trade);
+              setIsWizardReadOnly(readOnly);
+            }}
             onOpenCreateListing={() => setIsCreateListingOpen(true)}
             onViewSellerProfile={(sellerId) => setSelectedSellerProfileId(sellerId)}
             onSwitchUser={handleSwitchUser}
@@ -370,11 +374,15 @@ export default function App() {
         <TradeWizard
           trade={activeTradeForWizard}
           currentUser={currentUser}
+          isReadOnly={isWizardReadOnly}
           onUpdateTrade={handleUpdateTrade}
           onAddNotification={handleAddNotification}
           onUpdateWalletBalance={handleUpdateWalletBalance}
           onOpenDispute={(trade) => setTradeForDispute(trade)}
-          onClose={() => setActiveTradeForWizard(null)}
+          onClose={() => {
+            setActiveTradeForWizard(null);
+            setIsWizardReadOnly(false);
+          }}
           showToast={showToast}
         />
       )}

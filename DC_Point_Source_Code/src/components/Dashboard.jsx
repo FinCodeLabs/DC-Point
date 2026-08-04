@@ -355,7 +355,7 @@ export default function Dashboard({
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '0.75rem', color: '#94A3B8', textTransform: 'uppercase' }}>Locked Vault Reserve</div>
                       <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#00ADB5' }}>₹{(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)}</div>
-                      <button className="btn-navy btn-sm" onClick={() => onOpenTradeWizard(trade)} style={{ marginTop: '0.4rem' }}>
+                      <button className="btn-navy btn-sm" onClick={() => onOpenTradeWizard(trade, true)} style={{ marginTop: '0.4rem' }}>
                         Read-Only Audit Log
                       </button>
                     </div>
@@ -395,7 +395,7 @@ export default function Dashboard({
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: '700', textTransform: 'uppercase' }}>✅ Settlement Completed</div>
                       <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0B192C' }}>₹{(trade.totalEscrowAmount || trade.price * 1.05).toFixed(2)}</div>
-                      <button className="btn-outline btn-sm" onClick={() => onOpenTradeWizard(trade)} style={{ marginTop: '0.4rem' }}>
+                      <button className="btn-outline btn-sm" onClick={() => onOpenTradeWizard(trade, true)} style={{ marginTop: '0.4rem' }}>
                         View Settlement Audit
                       </button>
                     </div>

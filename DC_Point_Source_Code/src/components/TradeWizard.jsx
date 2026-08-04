@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenDispute, onClose, onAddNotification, onUpdateWalletBalance, showToast }) {
+export default function TradeWizard({ trade, currentUser, isReadOnly = false, onUpdateTrade, onOpenDispute, onClose, onAddNotification, onUpdateWalletBalance, showToast }) {
   if (!trade) return null;
 
   // Handle Escape keypress
@@ -38,10 +38,15 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
   // Check role of current logged-in user
   const isSuperAdmin = currentUser.id === 'user_admin_1' || currentUser.role?.toLowerCase().includes('admin');
   const isTradeBuyer = currentUser.id === trade.buyerId || currentUser.id === 'user_buyer_1';
-  const isTradeSeller = currentUser.id === trade.sellerId || currentUser.id === 'user_seller_1';
+  const isTradeSeller = currentUser.id === trade.sellerId;
+  const isSeller = !isSuperAdmin && isTradeSeller;
+  const isBuyer = !isSuperAdmin && isTradeBuyer;
 
-  const canSignAsBuyer = isSuperAdmin || (isTradeBuyer && currentUser.id !== trade.sellerId);
-  const canSignAsSeller = isSuperAdmin || (isTradeSeller && currentUser.id !== trade.buyerId);
+  // Determine if this modal session is in Read-Only Audit Mode
+  const isAuditReadOnly = isReadOnly || (isSuperAdmin && currentUser.id !== trade.buyerId && currentUser.id !== trade.sellerId);
+
+  const canSignAsBuyer = !isAuditReadOnly && isTradeBuyer;
+  const canSignAsSeller = !isAuditReadOnly && isTradeSeller && !isTradeBuyer;
 
   // Calculate exact financials based on item type
   const isRental = trade.type === 'rent';
@@ -294,6 +299,9 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
               <span className="badge badge-verified"><ShieldCheck size={12} /> Binding Legal Escrow Trade</span>
+              {isAuditReadOnly && (
+                <span className="badge badge-warning" style={{ background: '#FFFBEB', color: '#D97706', border: '1px solid #FCD34D' }}>👁️ Read-Only Audit Mode</span>
+              )}
               <span style={{ fontSize: '0.75rem', color: '#00ADB5' }}>ID: {trade.id}</span>
             </div>
             <h3 style={{ fontSize: '1.2rem', color: '#FFFFFF', fontWeight: '800' }}>{trade.title}</h3>
@@ -449,8 +457,10 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       <input 
                         type="number" 
                         value={agreementForm.deliveryTimeframeDays}
+                        readOnly={isAuditReadOnly}
+                        disabled={isAuditReadOnly}
                         onChange={e => setAgreementForm({ ...agreementForm, deliveryTimeframeDays: e.target.value })}
-                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: isAuditReadOnly ? '#F1F5F9' : '#FFFFFF', cursor: isAuditReadOnly ? 'not-allowed' : 'text' }}
                       />
                     </div>
 
@@ -459,8 +469,10 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       <input 
                         type="text" 
                         value={agreementForm.qualityInspectionTerms}
+                        readOnly={isAuditReadOnly}
+                        disabled={isAuditReadOnly}
                         onChange={e => setAgreementForm({ ...agreementForm, qualityInspectionTerms: e.target.value })}
-                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: isAuditReadOnly ? '#F1F5F9' : '#FFFFFF', cursor: isAuditReadOnly ? 'not-allowed' : 'text' }}
                       />
                     </div>
 
@@ -469,8 +481,10 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       <textarea 
                         rows={2}
                         value={agreementForm.customPackagingNotes}
+                        readOnly={isAuditReadOnly}
+                        disabled={isAuditReadOnly}
                         onChange={e => setAgreementForm({ ...agreementForm, customPackagingNotes: e.target.value })}
-                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1' }}
+                        style={{ width: '100%', padding: '0.4rem 0.6rem', marginTop: '0.2rem', borderRadius: '6px', border: '1px solid #CBD5E1', background: isAuditReadOnly ? '#F1F5F9' : '#FFFFFF', cursor: isAuditReadOnly ? 'not-allowed' : 'text' }}
                       />
                     </div>
                   </div>
@@ -493,6 +507,8 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       </div>
                       {agreementForm.signedByBuyer ? (
                         <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.25rem' }}>✓ Digitally Signed & Timestamped</div>
+                      ) : isAuditReadOnly ? (
+                        <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem', fontWeight: '600' }}>👁️ Read-Only Audit View (Pending Signature)</div>
                       ) : canSignAsBuyer ? (
                         <button className="btn-navy btn-sm" style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => handleSignAgreement('buyer')}>
                           <PenTool size={14} /> Accept & Sign as Buyer
@@ -509,6 +525,8 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
                       </div>
                       {agreementForm.signedBySeller ? (
                         <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '0.25rem' }}>✓ Digitally Signed & Timestamped</div>
+                      ) : isAuditReadOnly ? (
+                        <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem', fontWeight: '600' }}>👁️ Read-Only Audit View (Pending Signature)</div>
                       ) : canSignAsSeller ? (
                         <button className="btn-navy btn-sm" style={{ marginTop: '0.5rem', width: '100%' }} onClick={() => handleSignAgreement('seller')}>
                           <PenTool size={14} /> Accept & Sign as Seller
@@ -727,25 +745,55 @@ export default function TradeWizard({ trade, currentUser, onUpdateTrade, onOpenD
               </div>
 
               <div className="grid-2">
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px' }}>
-                  <h5 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.85rem' }}>Delivery Checklist & Tracking</h5>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={checklist.productionProof} onChange={e => setChecklist({ ...checklist, productionProof: e.target.checked })} />
-                      <span>Production Photo Proof Verified</span>
-                    </label>
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '100%' }}>
+                  <div>
+                    <h5 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.85rem', color: '#0B192C' }}>Delivery Checklist & Tracking</h5>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: isAuditReadOnly ? 'not-allowed' : 'pointer' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={checklist.productionProof} 
+                          disabled={isAuditReadOnly}
+                          onChange={e => setChecklist({ ...checklist, productionProof: e.target.checked })} 
+                        />
+                        <span>Production Photo Proof Verified</span>
+                      </label>
 
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={checklist.packagingProof} onChange={e => setChecklist({ ...checklist, packagingProof: e.target.checked })} />
-                      <span>Packaging & Sealing Proof Verified</span>
-                    </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: isAuditReadOnly ? 'not-allowed' : 'pointer' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={checklist.packagingProof} 
+                          disabled={isAuditReadOnly}
+                          onChange={e => setChecklist({ ...checklist, packagingProof: e.target.checked })} 
+                        />
+                        <span>Packaging & Sealing Proof Verified</span>
+                      </label>
 
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={checklist.unpackingCheck} onChange={e => setChecklist({ ...checklist, unpackingCheck: e.target.checked })} />
-                      <span>Buyer Unpacking & Quality Check Passed</span>
-                    </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: isAuditReadOnly ? 'not-allowed' : 'pointer' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={checklist.unpackingCheck} 
+                          disabled={isAuditReadOnly}
+                          onChange={e => setChecklist({ ...checklist, unpackingCheck: e.target.checked })} 
+                        />
+                        <span>Buyer Unpacking & Quality Check Passed</span>
+                      </label>
+                    </div>
+
+                    <div style={{ background: '#FFFFFF', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #CBD5E1', marginTop: '1rem', fontSize: '0.8rem' }}>
+                      <div style={{ fontWeight: '700', color: '#00ADB5' }}>📦 Courier Tracking Proof:</div>
+                      <div style={{ color: '#0F172A', fontWeight: '600', marginTop: '0.15rem' }}>
+                        {checklist.trackingNumber || 'TRK-DC-9928174'} (Express Logistics)
+                      </div>
+                    </div>
                   </div>
+
+                  {isAuditReadOnly && (
+                    <div style={{ marginTop: '1rem', background: '#F1F5F9', border: '1px solid #CBD5E1', padding: '0.75rem', borderRadius: '8px', fontSize: '0.78rem', color: '#475569', lineHeight: '1.4' }}>
+                      <strong>ℹ️ Buyer & Seller Checklist Verification:</strong> The Buyer (<strong>{trade.buyerName}</strong>) and Seller (<strong>{trade.sellerName}</strong>) must inspect and tick the delivery checklist & tracking items directly upon physical receipt.
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', padding: '1.25rem', borderRadius: '12px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
