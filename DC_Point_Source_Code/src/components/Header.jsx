@@ -271,363 +271,362 @@ export default function Header({
                 )}
               </div>
             ) : (
-              /* LOGGED IN STATE: Show Hamburger Menu (☰) and User Profile Controls on Far Right */
-              <div style={{ position: 'relative' }}>
+              /* LOGGED IN STATE: Show controls in order: List Item -> Dashboard -> Notification Bell -> Hamburger Menu (far right) */
+              <>
+                {/* 1. List Item Option strictly for Seller role */}
+                {isSellerRole && (
+                  <button 
+                    className="btn-primary btn-sm desktop-header-action"
+                    onClick={onOpenCreateListing}
+                    title="List an item or rental service"
+                    style={{ padding: '0.4rem 0.75rem' }}
+                  >
+                    <PlusCircle size={15} />
+                    <span>List Item</span>
+                  </button>
+                )}
+
+                {/* 2. Dashboard Button */}
                 <button 
-                  onClick={() => {
-                    setIsMenuOpen(!isMenuOpen);
-                    setIsNotifOpen(false);
-                    setIsProfileOpen(false);
-                  }}
-                  style={{
-                    background: isMenuOpen ? '#00ADB5' : 'rgba(255,255,255,0.1)',
-                    color: '#FFFFFF',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    padding: '0.5rem',
-                    borderRadius: '10px',
-                    display: 'flex',
+                  className={`btn-outline btn-sm desktop-header-action ${currentTab === 'dashboard' ? 'active' : ''}`}
+                  style={{ 
+                    color: '#FFFFFF', 
+                    borderColor: currentTab === 'dashboard' ? '#00ADB5' : 'rgba(255,255,255,0.2)',
+                    background: currentTab === 'dashboard' ? 'rgba(0,173,181,0.2)' : 'transparent',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    minHeight: '40px'
+                    gap: '0.4rem',
+                    padding: '0.4rem 0.75rem'
                   }}
-                  title="Navigation & User Menu"
-                  aria-label="Open User Navigation Menu"
+                  onClick={() => handleSelectNav('dashboard')}
                 >
-                  {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-                </button>
-
-              {/* Hamburger Dropdown Menu Drawer */}
-              {isMenuOpen && (
-                <div style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 12px)',
-                  right: '0',
-                  width: '320px',
-                  background: '#0B192C',
-                  border: '1px solid rgba(0, 173, 181, 0.4)',
-                  borderRadius: '16px',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
-                  padding: '1.25rem',
-                  zIndex: 1000,
-                  animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}>
-                  {/* User Profile Card inside Mobile Drawer */}
-                  {isAuthenticated && (
-                    <div style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(0, 173, 181, 0.3)',
-                      borderRadius: '12px',
-                      padding: '0.85rem',
-                      marginBottom: '1rem'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                        {currentUser.avatar ? (
-                          <img src={currentUser.avatar} alt={currentUser.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: isAdminRole ? '#8B5CF6' : isSellerRole ? '#10B981' : '#00ADB5', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
-                            {currentUser.name.charAt(0)}
-                          </div>
-                        )}
-                        <div>
-                          <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#FFFFFF' }}>{currentUser.name}</div>
-                          <div style={{ fontSize: '0.7rem', color: isAdminRole ? '#A78BFA' : isSellerRole ? '#10B981' : '#00ADB5', fontWeight: '700' }}>
-                            {isAdminRole ? '👑 Super Admin' : isSellerRole ? '🎨 Seller Account' : '🛒 Buyer Account'}
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#94A3B8', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem', marginBottom: '0.65rem' }}>
-                        <span>Escrow Wallet:</span>
-                        <strong style={{ color: '#10B981' }}>₹{currentUser.walletBalance.toLocaleString()}</strong>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          if (onLogout) onLogout();
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '0.45rem',
-                          borderRadius: '8px',
-                          background: 'rgba(239, 68, 68, 0.15)',
-                          border: '1px solid rgba(239, 68, 68, 0.3)',
-                          color: '#FCA5A5',
-                          fontSize: '0.78rem',
-                          fontWeight: '700',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.4rem',
-                          minHeight: '40px'
-                        }}
-                      >
-                        <LogOut size={14} />
-                        <span>Logout & Switch Role</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {!isAuthenticated && (
-                    <button
-                      className="btn-primary"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        if (onOpenAuthModal) onOpenAuthModal();
-                      }}
-                      style={{ width: '100%', marginBottom: '1rem', padding: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '44px' }}
-                    >
-                      <LogIn size={16} />
-                      <span>Login / Select Role</span>
-                    </button>
-                  )}
-
-                  <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#00ADB5', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                    Platform Navigation
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.25rem' }}>
-                    {!isAuthenticated && (
-                      <button 
-                        onClick={() => handleSelectNav('home')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem 0.75rem',
-                          borderRadius: '8px',
-                          background: currentTab === 'home' ? 'rgba(255,255,255,0.1)' : 'transparent',
-                          color: '#FFFFFF',
-                          fontSize: '0.875rem',
-                          textAlign: 'left',
-                          minHeight: '44px'
-                        }}
-                      >
-                        <span>Overview / Home</span>
-                        <ChevronRight size={14} color="#64748B" />
-                      </button>
-                    )}
-
-                    {isAuthenticated && (
-                      <button 
-                        onClick={() => handleSelectNav('dashboard')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem 0.75rem',
-                          borderRadius: '8px',
-                          background: currentTab === 'dashboard' ? 'rgba(255,255,255,0.1)' : 'transparent',
-                          color: '#FFFFFF',
-                          fontSize: '0.875rem',
-                          textAlign: 'left',
-                          minHeight: '44px'
-                        }}
-                      >
-                        <span>Workspace Dashboard</span>
-                        {activeTradeCount > 0 && (
-                          <span className="badge badge-warning" style={{ fontSize: '0.7rem' }}>{activeTradeCount} Active</span>
-                        )}
-                      </button>
-                    )}
-
-                    {!isAdminRole && (
-                      <button 
-                        onClick={() => handleSelectNav('marketplace')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.5rem 0.75rem',
-                          borderRadius: '8px',
-                          background: currentTab === 'marketplace' ? 'rgba(255,255,255,0.1)' : 'transparent',
-                          color: '#FFFFFF',
-                          fontSize: '0.875rem',
-                          textAlign: 'left',
-                          minHeight: '44px'
-                        }}
-                      >
-                        <span>Explore Marketplace</span>
-                        <ChevronRight size={14} color="#64748B" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* DC Point Pro Upgrade Card */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, rgba(0, 173, 181, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
-                    border: '1px solid rgba(0, 173, 181, 0.5)',
-                    borderRadius: '12px',
-                    padding: '1rem'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '800', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
-                      <Sparkles size={14} /> UPGRADE TO PRO TIER
-                    </div>
-                    <p style={{ fontSize: '0.775rem', color: '#CBD5E1', lineHeight: '1.4', marginBottom: '0.75rem' }}>
-                      Enjoy <strong>0% Escrow Fees</strong>, Express AI Contract Builder & 1-Hour Dispute Arbitration.
-                    </p>
-                    <button 
-                      className="btn-primary btn-sm"
-                      onClick={handleUpgrade}
-                      style={{ width: '100%', padding: '0.5rem', fontSize: '0.8rem' }}
-                    >
-                      <span>Upgrade to Pro (₹2,499/mo)</span>
-                      <ArrowRight size={14} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 2. Notification Bell (Desktop Only - Collapses on Mobile) */}
-            {isAuthenticated && (
-              <div className="desktop-header-action" style={{ position: 'relative' }}>
-                <button
-                  onClick={() => {
-                    setIsNotifOpen(!isNotifOpen);
-                    setIsMenuOpen(false);
-                    setIsProfileOpen(false);
-                  }}
-                  style={{
-                    background: isNotifOpen ? '#00ADB5' : 'rgba(255,255,255,0.1)',
-                    color: '#FFFFFF',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    padding: '0.5rem',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'all 0.2s'
-                  }}
-                  title="Notifications"
-                  aria-label="View notifications"
-                >
-                  <Bell size={18} />
-                  {unreadNotifsCount > 0 && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '-4px',
-                      right: '-4px',
-                      background: '#EF4444',
-                      color: '#FFF',
-                      fontSize: '0.65rem',
-                      fontWeight: '800',
-                      width: '18px',
-                      height: '18px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '2px solid #0B192C'
-                    }}>
-                      {unreadNotifsCount}
+                  <LayoutDashboard size={16} />
+                  <span>Dashboard</span>
+                  {activeTradeCount > 0 && (
+                    <span className="badge badge-warning" style={{ padding: '0.1rem 0.4rem', fontSize: '0.7rem' }}>
+                      {activeTradeCount}
                     </span>
                   )}
                 </button>
 
-                {/* Notification Drawer */}
-                {isNotifOpen && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 12px)',
-                    right: '0',
-                    width: '340px',
-                    background: '#0B192C',
-                    border: '1px solid rgba(0, 173, 181, 0.5)',
-                    borderRadius: '16px',
-                    boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
-                    padding: '1rem',
-                    zIndex: 1050,
-                    animation: 'slideUp 0.2s ease'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '800', fontSize: '0.85rem' }}>
-                        <Bell size={16} /> Notifications ({userNotifs.length})
-                      </div>
-                      {unreadNotifsCount > 0 && (
-                        <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>{unreadNotifsCount} Unread</span>
-                      )}
-                    </div>
+                {/* 3. Notification Bell */}
+                <div className="desktop-header-action" style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => {
+                      setIsNotifOpen(!isNotifOpen);
+                      setIsMenuOpen(false);
+                      setIsProfileOpen(false);
+                    }}
+                    style={{
+                      background: isNotifOpen ? '#00ADB5' : 'rgba(255,255,255,0.1)',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      padding: '0.5rem',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      transition: 'all 0.2s'
+                    }}
+                    title="Notifications"
+                    aria-label="View notifications"
+                  >
+                    <Bell size={18} />
+                    {unreadNotifsCount > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        background: '#EF4444',
+                        color: '#FFF',
+                        fontSize: '0.65rem',
+                        fontWeight: '800',
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid #0B192C'
+                      }}>
+                        {unreadNotifsCount}
+                      </span>
+                    )}
+                  </button>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '280px', overflowY: 'auto' }}>
-                      {userNotifs.length > 0 ? (
-                        userNotifs.map(n => (
-                          <div
-                            key={n.id}
+                  {/* Notification Drawer */}
+                  {isNotifOpen && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 12px)',
+                      right: '0',
+                      width: '340px',
+                      background: '#0B192C',
+                      border: '1px solid rgba(0, 173, 181, 0.5)',
+                      borderRadius: '16px',
+                      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                      padding: '1rem',
+                      zIndex: 1100,
+                      animation: 'slideUp 0.2s ease'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '800', fontSize: '0.85rem' }}>
+                          <Bell size={16} /> Notifications ({userNotifs.length})
+                        </div>
+                        {unreadNotifsCount > 0 && (
+                          <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>{unreadNotifsCount} Unread</span>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '280px', overflowY: 'auto' }}>
+                        {userNotifs.length > 0 ? (
+                          userNotifs.map(n => (
+                            <div
+                              key={n.id}
+                              onClick={() => {
+                                if (onMarkNotificationRead) onMarkNotificationRead(n.id);
+                                if (onOpenTradeFromNotification) onOpenTradeFromNotification(n.tradeId);
+                                setIsNotifOpen(false);
+                              }}
+                              style={{
+                                padding: '0.65rem 0.75rem',
+                                borderRadius: '8px',
+                                background: n.isRead ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 173, 181, 0.15)',
+                                border: '1px solid',
+                                borderColor: n.isRead ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 173, 181, 0.4)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                                <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF' }}>{n.title}</span>
+                                <span style={{ fontSize: '0.65rem', color: '#94A3B8' }}>{n.timestamp}</span>
+                              </div>
+                              <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0, lineHeight: '1.3' }}>
+                                {n.message}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: '#94A3B8', textAlign: 'center', padding: '1.5rem 0' }}>
+                            No notifications yet. Updates will appear here!
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Hamburger Menu (Far Right Corner) */}
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(!isMenuOpen);
+                      setIsNotifOpen(false);
+                      setIsProfileOpen(false);
+                    }}
+                    style={{
+                      background: isMenuOpen ? '#00ADB5' : 'rgba(255,255,255,0.1)',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      padding: '0.5rem',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      minHeight: '40px'
+                    }}
+                    title="Navigation & User Menu"
+                    aria-label="Open User Navigation Menu"
+                  >
+                    {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                  </button>
+
+                  {/* Hamburger Dropdown Menu Drawer */}
+                  {isMenuOpen && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 12px)',
+                      right: '0',
+                      width: '320px',
+                      background: '#0B192C',
+                      border: '1px solid rgba(0, 173, 181, 0.4)',
+                      borderRadius: '16px',
+                      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
+                      padding: '1.25rem',
+                      zIndex: 1100,
+                      animation: 'slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}>
+                      {/* User Profile Card inside Mobile Drawer */}
+                      {isAuthenticated && (
+                        <div style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: '1px solid rgba(0, 173, 181, 0.3)',
+                          borderRadius: '12px',
+                          padding: '0.85rem',
+                          marginBottom: '1rem'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                            {currentUser.avatar ? (
+                              <img src={currentUser.avatar} alt={currentUser.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: isAdminRole ? '#8B5CF6' : isSellerRole ? '#10B981' : '#00ADB5', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>
+                                {currentUser.name.charAt(0)}
+                              </div>
+                            )}
+                            <div>
+                              <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#FFFFFF' }}>{currentUser.name}</div>
+                              <div style={{ fontSize: '0.7rem', color: isAdminRole ? '#A78BFA' : isSellerRole ? '#10B981' : '#00ADB5', fontWeight: '700' }}>
+                                {isAdminRole ? '👑 Super Admin' : isSellerRole ? '🎨 Seller Account' : '🛒 Buyer Account'}
+                              </div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#94A3B8', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.5rem', marginBottom: '0.65rem' }}>
+                            <span>Escrow Wallet:</span>
+                            <strong style={{ color: '#10B981' }}>₹{currentUser.walletBalance.toLocaleString()}</strong>
+                          </div>
+                          <button
                             onClick={() => {
-                              if (onMarkNotificationRead) onMarkNotificationRead(n.id);
-                              if (onOpenTradeFromNotification) onOpenTradeFromNotification(n.tradeId);
-                              setIsNotifOpen(false);
+                              setIsMenuOpen(false);
+                              if (onLogout) onLogout();
                             }}
                             style={{
-                              padding: '0.65rem 0.75rem',
+                              width: '100%',
+                              padding: '0.45rem',
                               borderRadius: '8px',
-                              background: n.isRead ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 173, 181, 0.15)',
-                              border: '1px solid',
-                              borderColor: n.isRead ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 173, 181, 0.4)',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s'
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              border: '1px solid rgba(239, 68, 68, 0.3)',
+                              color: '#FCA5A5',
+                              fontSize: '0.78rem',
+                              fontWeight: '700',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.4rem',
+                              minHeight: '40px'
                             }}
                           >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                              <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF' }}>{n.title}</span>
-                              <span style={{ fontSize: '0.65rem', color: '#94A3B8' }}>{n.timestamp}</span>
-                            </div>
-                            <p style={{ fontSize: '0.75rem', color: '#CBD5E1', margin: 0, lineHeight: '1.3' }}>
-                              {n.message}
-                            </p>
-                          </div>
-                        ))
-                      ) : (
-                        <div style={{ fontSize: '0.8rem', color: '#94A3B8', textAlign: 'center', padding: '1.5rem 0' }}>
-                          No notifications yet. Updates will appear here!
+                            <LogOut size={14} />
+                            <span>Logout & Switch Role</span>
+                          </button>
                         </div>
                       )}
+
+                      {!isAuthenticated && (
+                        <button
+                          className="btn-primary"
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            if (onOpenAuthModal) onOpenAuthModal();
+                          }}
+                          style={{ width: '100%', marginBottom: '1rem', padding: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '44px' }}
+                        >
+                          <LogIn size={16} />
+                          <span>Login / Select Role</span>
+                        </button>
+                      )}
+
+                      <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#00ADB5', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                        Platform Navigation
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.25rem' }}>
+                        {!isAuthenticated && (
+                          <button 
+                            onClick={() => handleSelectNav('home')}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: '8px',
+                              background: currentTab === 'home' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                              color: '#FFFFFF',
+                              fontSize: '0.875rem',
+                              textAlign: 'left',
+                              minHeight: '44px'
+                            }}
+                          >
+                            <span>Overview / Home</span>
+                            <ChevronRight size={14} color="#64748B" />
+                          </button>
+                        )}
+
+                        {isAuthenticated && (
+                          <button 
+                            onClick={() => handleSelectNav('dashboard')}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: '8px',
+                              background: currentTab === 'dashboard' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                              color: '#FFFFFF',
+                              fontSize: '0.875rem',
+                              textAlign: 'left',
+                              minHeight: '44px'
+                            }}
+                          >
+                            <span>Workspace Dashboard</span>
+                            {activeTradeCount > 0 && (
+                              <span className="badge badge-warning" style={{ fontSize: '0.7rem' }}>{activeTradeCount} Active</span>
+                            )}
+                          </button>
+                        )}
+
+                        {!isAdminRole && (
+                          <button 
+                            onClick={() => handleSelectNav('marketplace')}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: '8px',
+                              background: currentTab === 'marketplace' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                              color: '#FFFFFF',
+                              fontSize: '0.875rem',
+                              textAlign: 'left',
+                              minHeight: '44px'
+                            }}
+                          >
+                            <span>Explore Marketplace</span>
+                            <ChevronRight size={14} color="#64748B" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* DC Point Pro Upgrade Card */}
+                      <div style={{
+                        background: 'linear-gradient(135deg, rgba(0, 173, 181, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
+                        border: '1px solid rgba(0, 173, 181, 0.5)',
+                        borderRadius: '12px',
+                        padding: '1rem'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#00ADB5', fontWeight: '800', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+                          <Sparkles size={14} /> UPGRADE TO PRO TIER
+                        </div>
+                        <p style={{ fontSize: '0.775rem', color: '#CBD5E1', lineHeight: '1.4', marginBottom: '0.75rem' }}>
+                          Enjoy <strong>0% Escrow Fees</strong>, Express AI Contract Builder & 1-Hour Dispute Arbitration.
+                        </p>
+                        <button 
+                          className="btn-primary btn-sm"
+                          onClick={handleUpgrade}
+                          style={{ width: '100%', padding: '0.5rem', fontSize: '0.8rem' }}
+                        >
+                          <span>Upgrade to Pro (₹2,499/mo)</span>
+                          <ArrowRight size={14} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 3. Dashboard Button (Desktop Only - Collapses on Mobile) */}
-            {isAuthenticated && (
-              <button 
-                className={`btn-outline btn-sm desktop-header-action ${currentTab === 'dashboard' ? 'active' : ''}`}
-                style={{ 
-                  color: '#FFFFFF', 
-                  borderColor: currentTab === 'dashboard' ? '#00ADB5' : 'rgba(255,255,255,0.2)',
-                  background: currentTab === 'dashboard' ? 'rgba(0,173,181,0.2)' : 'transparent',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  padding: '0.4rem 0.75rem'
-                }}
-                onClick={() => handleSelectNav('dashboard')}
-              >
-                <LayoutDashboard size={16} />
-                <span>Dashboard</span>
-                {activeTradeCount > 0 && (
-                  <span className="badge badge-warning" style={{ padding: '0.1rem 0.4rem', fontSize: '0.7rem' }}>
-                    {activeTradeCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            {/* List Item Option strictly for Seller role (Desktop Only) */}
-            {isSellerRole && (
-              <button 
-                className="btn-primary btn-sm desktop-header-action"
-                onClick={onOpenCreateListing}
-                title="List an item or rental service"
-                style={{ padding: '0.4rem 0.75rem' }}
-              >
-                <PlusCircle size={15} />
-                <span>List Item</span>
-              </button>
+                  )}
+                </div>
+              </>
             )}
 
           </div>
